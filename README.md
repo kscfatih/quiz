@@ -4,15 +4,11 @@ QUİZ PLATFORMU
 
 Projenin kurulumu için aşağıdaki adımları izleyin:
 
-1. Proje dosyalarını yerel bir klasöre kopyalayın.
+Proje dosyalarını yerel bir klasöre kopyalayın.
 
-2. Terminali açın ve projenin kopyalandığı klasörün yoluna gidin.
+Terminali açın ve projenin kopyalandığı klasörün yoluna gidin.
 
-3. Sanal ortamı oluşturun:
-
-   ```bash
-   python -m venv env
-
+Sanal ortamı oluşturun: python -m venv env
 
 Sanal ortamı etkinleştirin (Linux için):
 source env/bin/activate
