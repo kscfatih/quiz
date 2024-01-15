@@ -1,0 +1,129 @@
+/* large screens */
+@media (min-width: 1600px)
+{
+
+}
+
+
+@media (max-width: 1500px)
+{
+    
+}
+
+
+/* Desktops/Laptops */
+@media (max-width: 1200px)
+{
+    header
+    {
+        font-size: 30px;
+        padding: 20px 130px;
+    }
+    .radio-field
+    {
+        width: 90%;
+    }
+    .side img:nth-child(1)
+    {
+        width: 100%;
+    }
+    .question
+    {
+        right: 0px;
+        width: 85px;
+    }
+    .next-prev
+    {
+        width: 95%;
+    }
+    .next-prev button
+    {
+        font-size: 17px;
+        width: 48%;
+    }
+}
+
+/* Laptops */
+@media (max-width: 1024px)
+{
+
+}
+
+/* Tablets */
+@media (max-width: 768px)
+{
+    .tab-none 
+    {
+        display: none;
+    }
+    .tab-100
+    {
+        width: 100%;
+    }
+    .tab-50
+    {
+        width: 50%;
+    }
+    header
+    {
+        font-size: 20px;
+        padding: 20px 100px;
+        height: 100px;
+    }
+    footer
+    {
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        margin: 0;
+        background-color: var(--field-color);
+        padding: 10px;
+    }
+    .step-number
+    {
+        display: none;
+    }
+    .quiz-inner
+    {
+        margin-bottom: 70px;
+    }
+}
+
+/* mobile */
+@media (max-width: 576px)
+{
+    .quiz-inner
+    {
+        padding: 20px;
+        border-radius: 0;
+    }
+    header
+    {
+        top: 40px;
+        padding: 20px;
+        font-size: 18px;
+        width: 100%;
+    }
+    header::before
+    {
+        display: none;
+    }
+    header::after
+    {
+        display: none;
+    }
+    .h-border
+    {
+        display: none;
+    }
+    .next-prev
+    {
+        width: 100%;
+    }
+    .next-prev button
+    {
+        width: 100%;
+    }
+
+}

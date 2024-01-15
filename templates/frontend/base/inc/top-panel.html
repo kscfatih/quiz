@@ -1,0 +1,74 @@
+{%load static%}
+<div class='site_top_panel wave slider'>
+    <!-- canvas -->
+    <div class='top_half_sin_wrapper'>
+        <canvas class='top_half_sin' data-bg-color='#ffffff' data-line-color='#ffffff'></canvas>
+    </div>
+    <!-- / canvas -->
+    <div class='container'>
+        <div class='row_text_search'>
+            <div id='top_panel_text'><a href="tel:1-800-123-45678"><i class="fa fa-phone-square"></i> 1-800-123-45678 </a>;
+                <a href="mailto:mail@mail.com"> <i class="fa fa-envelope-o"></i>mail@mail.com</a>
+            </div>
+            <form method="get" class="search-form" action="#">
+                <label>
+                    <span class="screen-reader-text">Search for:</span>
+                    <input type="text" class="search-field vova" value="" name="s" title="Search for:" />
+                </label>
+                <input type="submit" class="search-submit" value="Search" />
+                <input type='hidden' name='lang' value='en' />
+            </form>
+        </div>
+        <div id='top_panel_links'>
+            <div class='search_icon'></div>
+            <div id='top_social_links_wrapper'>
+                <div class='share-toggle-button'><i class='share-icon fa fa-share-alt'></i></div>
+                <div class='cws_social_links'><a href='http://twitter.com/' class='cws_social_link' title='Twitter'><i class='share-icon fa fa-twitter'></i></a><a href='http://facebook.com/' class='cws_social_link' title='Facebook'><i class='share-icon fa fa-facebook'></i></a><a href='http://dribbble.com/' class='cws_social_link' title='Dribbble'><i class='share-icon fa fa-dribbble'></i></a><a href='https://plus.google.com/' class='cws_social_link' title='Google'><i class='share-icon fa fa-google-plus'></i></a></div>
+            </div>
+            <div class='mini-cart'> <a class="woo_icon" href="features-shop-cart.html" title="View your shopping cart"><i class='woo_mini-count fa fa-shopping-cart'><span>2</span></i></a>
+                <div class="woo_mini_cart">
+                    <!-- start product list -->
+                    <ul class="cart_list product_list_widget">
+                        <li>
+                            <a href="#" class="remove" title="Remove this item">×</a>
+                            <a href="shop-single-product.html">
+                                <img width="180" height="180" src="{%static 'frontend/pic/shop/58x58-bag.jpg'%}" class="attachment-shop_thumbnail" alt="poster_2_up">Bag&nbsp; </a>
+                            <span class="quantity">1 × <span class="amount">£12.00</span></span>
+                        </li>
+                        <li>
+                            <a href="#" class="remove" title="Remove this item">×</a>
+                            <a href="shop-single-product.html">
+                                <img width="180" height="180" src="{%static 'frontend/pic/shop/58x58-basket.jpg'%}" class="attachment-shop_thumbnail" alt="T_7_front">Basket&nbsp; </a>
+                            <span class="quantity">1 × <span class="amount">£18.00</span></span>
+                        </li>
+                    </ul>
+                    <!-- end product list -->
+                    <p class="total"><strong>Subtotal:</strong> <span class="amount">£30.00</span></p>
+                    <p class="buttons">
+                        <a href="features-shop-cart.html" class="button wc-forward">View Cart</a>
+                        <a href="features-shop-checkout.html" class="button checkout wc-forward">Checkout</a>
+                    </p>
+                </div>
+            </div>
+            <div class="lang_bar">
+                <div>
+                    <ul>
+                        <li>
+                            <a href="#" class="lang_sel_sel icl-en"><img class="iclflag" src="{%static 'frontend/img/en.png'%}" alt="en" title="English" /> &nbsp;English
+                            </a>
+                            <ul>
+                                <li class="icl-fr">
+                                    <a href="#"><img class="iclflag" src="{%static 'frontend/img/fr.png'%}" alt="fr" title="Français" />&nbsp;Français</a>
+                                </li>
+                                <li class="icl-de">
+                                    <a href="#"><img class="iclflag" src="{%static 'frontend/img/de.png'%}" alt="de" title="Deutsch" />&nbsp;Deutsch</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+</div>

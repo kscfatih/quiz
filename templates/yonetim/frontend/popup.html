@@ -1,0 +1,180 @@
+{%extends 'yonetim/base/index.html'%}
+{%block css%}
+<style>
+    .modal-dialog {
+        max-height: 80vh;
+        overflow-y: initial !important;
+    }
+    .modal-body {
+        height: 60vh;
+        overflow-y: auto;
+    }
+    #medyaList > div {
+    cursor: pointer; /* Fare imlecini el şeklinde göster */
+}
+
+
+
+    </style>
+<style>
+    .img-container {
+        width: 125px;
+        height: 125px;
+        overflow: hidden;
+        margin: 10px;
+        display: inline-block;
+    }
+    .img-container img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .selected {
+        border: 2px solid blue;
+    }
+
+
+    .media-grid {
+    display: grid;
+    gap: 20px;
+}
+
+/* For images and videos */
+.media-grid.images, .media-grid.videos {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* For music */
+.media-grid.music {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+#logo_div_hak {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+}
+
+#logo_div_hak img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    display: block;  
+}
+
+.tablo-resim {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    display: block;
+}
+</style>
+{%endblock css%}
+{%block content%}
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">Pop-up Ekle</h4>
+        </div>
+
+    </div>
+</div>
+
+    {%csrf_token%}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-default card-md mb-4">
+            <form method="POST">
+                {%csrf_token%}
+            <div class="card-header">
+                <button type="submit" class="btn btn-primary"> Kaydet </button>
+            </div>
+            <div class="card-body py-md-30">
+               
+                    <div class="form-group row mb-n25">
+                        <div class="col-md-6 mb-25">
+                            <label for="hakkimizda_resim_" class="color-dark fs-14 fw-500 align-center">Resim</label>
+                            <button type="button" class="btn btn-primary answer-image" id="hakkimizda_resim_" data-toggle="modal" data-target="#medyaModal2">Medya Ekle
+                            </button>
+                            <input type="hidden" name="resim" id="hakkimizda_resim_input">
+                            <div id="logo_div_hak" style="display : none;"><img src="{{kayit.resim}}" id="olan_resim_hak" ></div>
+                         </div>
+                         <div class="col-md-6 mb-25">
+                            <div class="radio-horizontal-list d-flex">
+                                <div class="radio-theme-default custom-radio ">
+                                    
+                                    <input class="radio" type="radio" name="kontrol"  {% if kayit.durum == "on" %} checked  {% endif %}value="on" id="c-r-e-t" >
+                                    <label for="c-r-e-t">
+                                        <span class="radio-text">Aktif</span>
+                                    </label>
+                                </div>
+                                <div class="radio-theme-default custom-radio ">
+                                    <input class="radio" type="radio" name="kontrol" {% if kayit.durum == "off" %} checked  {% endif %}  value="off" id="c-r-e-f" >
+                                    <label for="c-r-e-f">
+                                        <span class="radio-text">Pasif</span>
+                                    </label>
+                                </div>
+                                
+                            </div>
+                         </div>
+                        
+                        
+                    </form>
+                    </div>
+                    
+               
+            </div>
+        </div>
+    </div>
+  
+</div>
+
+
+
+{%include 'yonetim/frontend/inc/resim-modal.html'%}
+{%endblock content%}
+
+{%block js%}
+<script>
+   
+    $(document).ready(function() {
+
+$("#ekleS").click(function() {
+  
+    
+   
+
+    
+    $('#myModal').modal('hide');
+});
+$('.ekle_butonu').on('click', function() {
+    if($(this).hasClass('hakkimizda_resim')){
+        console.log("eklendi")
+        $('#logo_div_hak').show();
+        $('#logo_div_hak').html(selectedImage); 
+        addDeleteButton('#logo_div_hak');
+        $('#hakkimizda_resim_input').val(selectedImage.attr('src'));
+    }
+    $('.clickable-image').removeClass('selected');
+    $('#medyaModal2').modal('hide');
+    $('.modal-backdrop').remove();
+})
+
+
+$('#hakkimizda_resim_').on('click', function() {
+    $('.ekle_butonu').addClass('hakkimizda_resim');
+});
+  
+});
+function addDeleteButton(divSelector) {
+    const deleteBtn = $('<button type="button" >Sil</button>')
+        .addClass('btn btn-danger')
+        .on('click', function() {
+            $(divSelector).empty().hide();
+        });
+
+    $(divSelector).after(deleteBtn);
+}
+</script>
+{%endblock js%} 

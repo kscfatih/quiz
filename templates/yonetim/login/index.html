@@ -1,0 +1,119 @@
+{%load static%}
+<!doctype html>
+<html lang="en" dir="ltr">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{%static 'yonetim/css/plugin.min.css'%}">
+
+    <link rel="stylesheet" href="{%static 'yonetim/css/style.css'%}">
+
+
+    <link rel="icon" type="image/png" sizes="16x16" href="https://www.3nmarket.com/wp-content/uploads/2022/02/fav.png">
+</head>
+
+<body>
+    <main class="main-content">
+
+        <div class="signUP-admin">
+            <div class="container-fluid">
+                <div class="row justify-content-center">
+                    <div class="col-xl-4 col-lg-5 col-md-5 p-0">
+                        <div class="signUP-admin-left signIn-admin-left position-relative">
+                            
+                            <div class="signUP-admin-left__content">
+                                
+                                <h1>QUİZVAR</h1>
+                            </div>
+                            <div class="signUP-admin-left__img">
+                                <img class="img-fluid svg" src="{%static 'yonetim/img/svg/signupIllustration.svg'%}" alt="img" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8 col-lg-7 col-md-7 col-sm-8">
+                        <div class="signUp-admin-right signIn-admin-right  p-md-40 p-10">
+                            <div class="row justify-content-center">
+                                <div class="col-xl-7 col-lg-8 col-md-12">
+                                    <div class="edit-profile mt-md-25 mt-0">
+                                        <div class="card border-0">
+                                            <div class="card-header border-0  pb-md-15 pb-10 pt-md-20 pt-10 ">
+                                                <div class="edit-profile__title">
+                                                    <h6>Giriş yap</h6>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="edit-profile__body">
+                                                    {% if messages %}
+    {% for message in messages %}
+        <div class="alert-big alert alert-success" role="alert">
+            <div class="alert-content">
+                <h6 class="alert-heading">Success</h6>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+                                                    <form method="POST">
+                                                        {% csrf_token %}
+                                                    <div class="form-group mb-20">
+                                                        <label for="username">Kullanıcı adı</label>
+                                                        <input type="text" class="form-control" id="username" name = "username" placeholder="Kullanıcı adı ...">
+                                                    </div>
+                                                    <div class="form-group mb-15">
+                                                        <label for="password-field">Şifre</label>
+                                                        <div class="position-relative">
+                                                            <input id="password-field" type="password" class="form-control" name="password" placeholder="Şifre ...">
+                                                            <div class="fa fa-fw fa-eye-slash text-light fs-16 field-icon toggle-password2"></div>
+                                                        </div>
+                                                    </div>
+                                                   
+                                                    <div class="button-group d-flex pt-1 justify-content-md-start justify-content-center">
+                                                        <button type="submit" class="btn btn-primary btn-default btn-squared mr-15 text-capitalize lh-normal px-50 py-15 signIn-createBtn ">
+                                                            sign in
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                                    
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <div id="overlayer">
+        <span class="loader-overlay">
+            <div class="atbd-spin-dots spin-lg">
+                <span class="spin-dot badge-dot dot-primary"></span>
+                <span class="spin-dot badge-dot dot-primary"></span>
+                <span class="spin-dot badge-dot dot-primary"></span>
+                <span class="spin-dot badge-dot dot-primary"></span>
+            </div>
+        </span>
+    </div>
+
+
+    <script src="{%static 'yonetim/js/plugins.min.js'%}"></script>
+
+    <script src="{%static 'yonetim/js/script.min.js'%}"></script>
+
+</body>
+
+
+</html>

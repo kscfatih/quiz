@@ -1,0 +1,97 @@
+{% extends 'yonetim/base/index.html' %}
+
+{%block css%}
+<style>
+.card .gc__img {
+    width: 100%;
+    height: 250px;  
+    overflow: hidden;  
+}
+
+.card .gc__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+</style>
+
+{%endblock css%}
+
+{% block content %}
+
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="breadcrumb-main">
+                <h4 class="text-capitalize breadcrumb-title">Medyalar</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtreleme İçin A Etiketleri -->
+    <div class="row mb-4">
+        <div class="col-lg-12 d-flex">
+            <a href="?tur=RESIM" class="btn btn-primary mr-2">Resimler</a>
+            <a href="?tur=MUZIK" class="btn btn-secondary mr-2">Müzikler</a>
+            <a href="?tur=VIDEO" class="btn btn-info">Videolar</a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for medya in medyalar %}
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card">
+                    <div class=" ">
+                        <div class="gc__img">
+                            {% if medya.tur == "RESIM" %}
+                                <img src="{{ medya.dosya.url }}" alt="Resim" class="card-img-top w-100 radius-xl">
+                            {% elif medya.tur == "MUZIK" %}
+                                <audio controls>
+                                    <source src="{{ medya.dosya.url }}" type="audio/mpeg">
+                                    Tarayıcınız audio öğesini desteklemiyor.
+                                </audio>
+                            {% elif medya.tur == "VIDEO" %}
+                                <video width="320" height="240" controls>
+                                    <source src="{{ medya.dosya.url }}" type="video/mp4">
+                                    Tarayıcınız video öğesini desteklemiyor.
+                                </video>
+                            {% endif %}
+                        </div>
+                       
+                        <div class="card-footer">
+                            <form method="post" action="{% url 'panel:delete_media' medya.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Sil</button>
+                            </form>
+                        </div>
+                     
+                      
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginatör -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if medyalar.has_previous %}
+                        <a href="?sayfa=1&tur={{ tur }}" class="btn btn-light">&laquo; İlk Sayfa</a>
+                        <a href="?sayfa={{ medyalar.previous_page_number }}&tur={{ tur }}" class="btn btn-light">Önceki</a>
+                    {% endif %}
+                
+                    <span class="current ml-2 mr-2">
+                        Sayfa {{ medyalar.number }} / {{ medyalar.paginator.num_pages }}
+                    </span>
+                
+                    {% if medyalar.has_next %}
+                        <a href="?sayfa={{ medyalar.next_page_number }}&tur={{ tur }}" class="btn btn-light">Sonraki</a>
+                        <a href="?sayfa={{ medyalar.paginator.num_pages }}&tur={{ tur }}" class="btn btn-light">Son Sayfa &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

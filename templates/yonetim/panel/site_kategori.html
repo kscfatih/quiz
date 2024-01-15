@@ -1,0 +1,10 @@
+<form method ="POST">
+{% csrf_token %}
+    <input name = "isim" value="{{bilgi.name}}">
+    <button type ="submit"> İtele </button>
+    <select name = "kategori">
+        {% for i in ust_kategori %}
+        <option value="{{i.id}}">{{i.name}}</option>
+        {% endfor %}
+    </select>
+</form>

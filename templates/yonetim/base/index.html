@@ -1,0 +1,44 @@
+{%load static%}
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {%include 'yonetim/base/inc/head.html'%}
+    {%block css%}  {%endblock css%}
+    {%block js%}  {%endblock js%}
+</head>
+<body class="layout-light side-menu">
+    {%include 'yonetim/base/inc/navbar.html'%}
+    <main class="main-content">
+        {%include 'yonetim/base/inc/sidebar.html'%}
+        <div class="contents">
+            <div class="container-fluid">
+                    {%block content%}  {%endblock content%}
+            </div>
+       </div>
+        {%include 'yonetim/base/inc/footer.html'%}
+        <div class="overlay-dark-sidebar"></div>
+    <div class="customizer-overlay"></div>
+    </main>
+     {%include 'yonetim/base/inc/js.html'%}
+
+     <script>
+        function updateOnlineUsers() {
+            fetch('/panel/update_user/')
+                .then(response => response.json())
+                .then(data => {
+                });
+        }
+        function fetchOnlineUsers() {
+            fetch('/panel/get_online_users/')
+                .then(response => response.json())
+                .then(data => {
+                    const h1Element = document.getElementById('aktif-kullanici');
+                    h1Element.textContent = data.online_users;
+                });
+        }
+        setInterval(updateOnlineUsers, 1000);
+        setInterval(fetchOnlineUsers, 1000);
+    </script>
+   </body>
+</html>

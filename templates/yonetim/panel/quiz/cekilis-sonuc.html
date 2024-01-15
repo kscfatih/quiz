@@ -1,0 +1,328 @@
+{%extends 'yonetim/base/index.html'%}
+{%block css%}
+<style>
+    .modal-dialog {
+        max-height: 80vh;
+        overflow-y: initial !important;
+    }
+    .modal-body {
+        height: 60vh;
+        overflow-y: auto;
+    }
+    #medyaList > div {
+    cursor: pointer; /* Fare imlecini el şeklinde göster */
+}
+
+
+
+    </style>
+<style>
+    .img-container {
+        width: 125px;
+        height: 125px;
+        overflow: hidden;
+        margin: 10px;
+        display: inline-block;
+    }
+    .img-container img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .selected {
+        border: 2px solid blue;
+    }
+
+
+    .media-grid {
+    display: grid;
+    gap: 20px;
+}
+
+/* For images and videos */
+.media-grid.images, .media-grid.videos {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* For music */
+.media-grid.music {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+#logo_div_hak {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+}
+
+#logo_div_hak img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    display: block;  
+}
+
+.tablo-resim {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    display: block;
+}
+</style>
+{%endblock css%}
+{%block content%}
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">Çekiliş Sonucu Ekleme</h4>
+        </div>
+
+    </div>
+</div>
+
+    {%csrf_token%}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-default card-md mb-4">
+            <form method="POST">
+                {%csrf_token%}
+            <div class="card-header">
+                <button type="submit" class="btn btn-primary"> Kaydet </button>
+            </div>
+            <div class="card-body py-md-30">
+               
+                    <div class="form-group row mb-n25">
+                        <div class="col-md-12 mb-25">
+                            <label for="test-baslik" class=" color-dark fs-14 fw-500 align-center">Başlık</label>
+                            {% if cekilis %}
+                            <input type="text" name="cekilis-baslik" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="test-baslik" value="{{cekilis.baslik}}" >
+                            {% else %}
+                            <input type="text" name="cekilis-baslik" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="test-baslik" placeholder="çekiliş başlığı giriniz..." >
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-12 mb-25">
+                            <label for="test-aciklama" class=" color-dark fs-14 fw-500 align-center">Açıklama</label>
+                            {% if cekilis %}
+                            <textarea name="cekilis-aciklama" class="col-12 mb-3 form-group form-control">{{cekilis.aciklama}}</textarea>
+                            {% else %}
+                            <textarea name="cekilis-aciklama" class="col-12 mb-3 form-group form-control"></textarea>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-12 mb-25">
+                            <button type="button" class="btn btn-primary kazanan-ekle" data-toggle="modal" data-target="#myModal">Kazanan Ekle</button>
+                        </div>
+                        <div class="col-md-12 mb-25">
+                            <div class="table4  p-25 bg-white mb-30">
+                              
+                                    <div class="table-responsive">
+                                        <table class="table mb-0" id="myTable">
+                                        <thead>
+                                            <tr class="userDatatable-header">
+                                                
+                                                <th>
+                                                    <span >Ad Soyad</span>
+                                                </th>
+                                                <th>
+                                                    <span >Okul</span>
+                                                </th>
+                                                
+                                                <th>
+                                                    <span >Sınıf</span>
+                                                </th>
+                                                
+                                                <th>
+                                                    <span >Kazandığı Hediye</span>
+                                                </th>
+                                                <th>
+                                                    <span >Açıklama</span>
+                                                </th>
+                                                <th>
+                                                    <span >Resim</span>
+                                                </th>
+                                                <th>
+                                                    <span >Sil</span>
+                                                </th>
+                                                
+                                                
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                          {% for i in cekilis_alanlar %}
+                                            <tr>
+                                                <td>
+                                                    <div class="row">
+                                                    {{i.ad_soyad}}    
+                                                        
+                                                 
+                                                   
+                                                        
+                                                
+                                                </div>
+                                                  
+                                                </td>
+                                                <td>
+                                                   
+                                                    {{i.okul}}
+                                                    
+                                                </td>
+                                               
+                                            <td>
+                                               
+                                       
+                                            {{i.sinif}}
+                                        </td>
+                                                
+                                                <td>
+                                                  
+                                                  {{i.urun}}
+                                                   
+                                                </td>
+                                                <td>
+                                                  
+                                                    {{i.aciklama}}
+                                                     
+                                                  </td>
+                                                  <td>
+                                                  <img src=" {{i.resim}}" class="tablo-resim" alt="">
+                                                   
+                                                     
+                                                  </td>
+                                                  
+                                                
+                                                <td>
+                                                 <a href="/panel/cekilis-sil/{{i.id}}"> <button type="button" class="btn btn-primary mb-3" data-id="{{i.id}}" >Sil</button></a> 
+                                                 
+                                                
+                                                </td>
+            
+                                                
+                                            </tr>
+                                         {% endfor %}
+                                        </tbody>
+                                    </table>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                    
+               
+            </div>
+        </div>
+    </div>
+  
+</div>
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="card card-default card-md mb-4">
+            <form method="POST">
+                {%csrf_token%}
+            <div class="card-body py-md-30">
+              
+        <div class="form-group row col-12 mb-n25 alanlar">
+          
+            <div class="col-md-3 mb-25">
+                                <label for="test-baslik" class=" color-dark fs-14 fw-500 align-center">Ad ve Soyad</label>
+                                <input type="text" name="ad_soyad" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="test-baslik" placeholder="ad ve soyad giriniz..." >
+                            </div>
+                            <div class="col-md-3 mb-25">
+                                <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Kategori</label>
+                                <select name="sinif" class="custom-select is-valid form-control select-arrow-none ih-medium  radius-xs b-light shadow-none color-light  fs-14" id="validationServer04" aria-describedby="validationServer04Feedback" >
+                                    <option selected disabled value="">Seçiniz</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-25">
+                                <label for="test-baslik" class=" color-dark fs-14 fw-500 align-center">Okul Adı</label>
+                                <input type="text" name="okul" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="test-baslik" placeholder="okul adı giriniz..." >
+                            </div>
+                            <div class="col-md-3 mb-25">
+                                <label for="test-baslik" class=" color-dark fs-14 fw-500 align-center">Kazandığı Ürün</label>
+                                <input type="text" name="urun" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="test-baslik" placeholder="Ürün ismi giriniz..." >
+                            </div>
+                            <div class="col-md-6 mb-25">
+                                <label for="test-baslik" class=" color-dark fs-14 fw-500 align-center">Açıklama</label>
+                                <input type="text" name="aciklama" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="test-baslik" placeholder="Açıklama..." >
+                            </div>
+                            <div class="col-md-6 mb-25">
+                                            <label for="hakkimizda_resim_" class="color-dark fs-14 fw-500 align-center">Resim</label>
+                                            <button type="button" class="btn btn-primary answer-image" id="hakkimizda_resim_" data-toggle="modal" data-target="#medyaModal2">Medya Ekle
+                                            </button>
+                                            <input type="hidden" name="hakkimizda_resim_input" id="hakkimizda_resim_input">
+                                            <div id="logo_div_hak" style="display : none;"><img src="{{site_ayar.hakkimizda_resim}}" id="olan_resim_hak" ></div>
+                                         </div>
+                                       
+                                        
+                        </div>
+                   
+                        </div> 
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success" id="ekleS">Ekle</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+        </div>
+    </form>
+      </div>
+    </div>
+</div>
+
+
+
+{%include 'yonetim/frontend/inc/resim-modal.html'%}
+{%endblock content%}
+
+{%block js%}
+<script>
+   
+    $(document).ready(function() {
+
+$("#ekleS").click(function() {
+  
+    
+   
+
+    
+    $('#myModal').modal('hide');
+});
+$('.ekle_butonu').on('click', function() {
+    if($(this).hasClass('hakkimizda_resim')){
+        console.log("eklendi")
+        $('#logo_div_hak').show();
+        $('#logo_div_hak').html(selectedImage); 
+        addDeleteButton('#logo_div_hak');
+        $('#hakkimizda_resim_input').val(selectedImage.attr('src'));
+    }
+    $('.clickable-image').removeClass('selected');
+    $('#medyaModal2').modal('hide');
+    $('.modal-backdrop').remove();
+})
+
+
+$('#hakkimizda_resim_').on('click', function() {
+    $('.ekle_butonu').addClass('hakkimizda_resim');
+});
+  
+});
+function addDeleteButton(divSelector) {
+    const deleteBtn = $('<button>Sil</button>').addClass('btn btn-danger').on('click', function() {
+        $(divSelector).empty().hide();
+    });  $(divSelector).append(deleteBtn);
+}
+</script>
+{%endblock js%} 

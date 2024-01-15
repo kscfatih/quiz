@@ -1,0 +1,255 @@
+{%extends 'yonetim/base/index.html'%}
+
+{%block css%}
+<style>
+    .modal-dialog {
+        max-height: 80vh;
+        overflow-y: initial !important;
+    }
+    .modal-body {
+        height: 60vh;
+        overflow-y: auto;
+    }
+    #medyaList > div {
+    cursor: pointer; /* Fare imlecini el şeklinde göster */
+}
+
+
+
+    </style>
+<style>
+    .img-container {
+        width: 125px;
+        height: 125px;
+        overflow: hidden;
+        margin: 10px;
+        display: inline-block;
+    }
+    .img-container img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .selected {
+        border: 2px solid blue;
+    }
+
+
+    .media-grid {
+    display: grid;
+    gap: 20px;
+}
+
+
+.media-grid.images, .media-grid.videos {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+
+.media-grid.music {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+#logo_div_hak {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+}
+
+#logo_div_hak img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    display: block;  
+}
+
+.tablo-resim {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    display: block;
+}
+</style>
+{%endblock css%}
+
+{%block content%}
+
+
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'error' %}
+            <div class="alert-big alert alert-danger" role="alert">
+                <div class="alert-content">
+                    <h6 class="alert-heading">Lütfen Kategori Tipini Seçiniz...</h6>
+                    <p>{{ message.text }}</p>
+                </div>
+            </div>
+        {% elif message.tags == 'success' %}
+            <div class="alert-big alert alert-success" role="alert">
+                <div class="alert-content">
+                    <h6 class="alert-heading">Kategori ekleme başarılı</h6>
+                    <p>{{ message.text }}</p>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{%include 'yonetim/frontend/inc/resim-modal.html'%}
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">Yazı Ekle</h4>
+            <div class="breadcrumb-action justify-content-center flex-wrap">
+                
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="col-lg-12">
+    <div class="card card-default card-md mb-4">
+        <form method="POST">
+            {%csrf_token%}
+        <div class="card-body">
+            <div class="form-group form-element-input">
+                <label for="exampleFormControlTextarea1" class="il-gray fs-14 fw-500 align-center">
+                    Başlık</label>
+                <input class="form-control"  id="exampleFormControlTextarea1" name="baslik" rows="3" {% if yazi %} value="{{yazi.baslik}}" {% else %} placeholder="Başlık giriniz..." {% endif %}> </input>
+            </div>
+            <div class="form-group form-element-input">
+                <label for="hakkimizda_resim_" class="color-dark fs-14 fw-500 align-center">Resim</label>
+                <button type="button" class="btn btn-primary answer-image" id="hakkimizda_resim_" data-toggle="modal" data-target="#medyaModal2">Medya Ekle
+                </button>
+                
+                <input type="hidden" name="hakkimizda_resim_input" id="hakkimizda_resim_input">
+                <div id="logo_div_hak"><img src="{{yazi.resim}}" id="olan_resim_hak" ></div>
+            </div>
+            <div class="form-group form-element-input">
+                <div class="col-md-6 mb-25">
+                    <label for="yayinlanma-durumu" class=" color-dark fs-14 fw-500 align-center">Durumu</label>
+                    <div class="radio-horizontal-list d-flex">
+                        <div class="radio-theme-default custom-radio ">
+                            <input class="radio" type="radio" name="yayinlanma-durumu" {% if yazi.durum == "1" %} checked {% endif %}   value="1" id="radio-hl1"  >
+                            <label for="radio-hl1">                                                        
+                                <span class="radio-text">Yayınlandı</span>
+                            </label>
+                        </div>
+                        <div class="radio-theme-default custom-radio ">
+                            <input class="radio" type="radio" name="yayinlanma-durumu" {% if yazi.durum == "0" %} checked {% endif %} value="0" id="radio-hl2">
+                            <label for="radio-hl2">
+                                <span class="radio-text">Yayınlanmadı</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-25">
+                    <label for="one-cikan" class=" color-dark fs-14 fw-500 align-center">Öne Çıkan</label>
+                    <div class="radio-horizontal-list d-flex">
+                        <div class="radio-theme-default custom-radio ">
+                            <input class="radio" type="radio" name="one-cikan" {% if yazi.one_cikan == "1" %} checked {% endif %}   value="1" id="one-cikan1"  >
+                            <label for="one-cikan1">                                                        
+                                <span class="radio-text">Evet</span>
+                            </label>
+                        </div>
+                        <div class="radio-theme-default custom-radio ">
+                            <input class="radio" type="radio" name="one-cikan" {% if yazi.one_cikan == "0" %} checked {% endif %} value="0" id="one-cikan">
+                            <label for="one-cikan">
+                                <span class="radio-text">Hayır</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group form-element-textarea">
+                <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Kategori</label>
+                                            <select name="blog-kategori" class="custom-select is-valid form-control select-arrow-none ih-medium  radius-xs b-light shadow-none color-light  fs-14" id="validationServer04" aria-describedby="validationServer04Feedback" >
+                                                <option selected disabled value="">Seçiniz</option>
+                                                 {% for i in kategoriler %}
+                                                 <option {% if yazi.kategori_id == i.id %} selected {% endif %} value="{{i.id}}">{{i.title}}</option>
+                                                 {% endfor %}
+                                            </select>    
+            </div>
+            <div class="form-group form-element-textarea">
+                <textarea name="yazi" id="editor6" rows="10" cols="80">
+                    {% if yazi %}
+                    {{yazi.icerik}}
+                    {% endif %}
+                </textarea>    
+            </div>
+            
+            <script>
+                tinymce.init({ 
+                    selector: '#editor6',
+                     plugins: ['link', 'table'],
+                     relative_urls : false,
+                    remove_script_host : false,
+                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+                
+                });
+            </script>
+            <div class="form-group form-element-input">
+                <button class="btn btn-success">Kaydet</button>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+{%endblock content%}
+
+{%block js%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.0/tinymce.min.js"></script>
+
+
+
+<script>
+   
+    $(document).ready(function() {
+        var imgElement = document.getElementById('olan_resim_hak');
+    var inputElement = document.getElementById('hakkimizda_resim_input');
+    if(imgElement.src) {
+        inputElement.value = imgElement.src;
+    }
+
+$("#ekleS").click(function() {
+  
+    
+   
+
+    
+    $('#myModal').modal('hide');
+});
+$('.ekle_butonu').on('click', function() {
+    if($(this).hasClass('hakkimizda_resim')){
+        console.log("eklendi")
+        $('#logo_div_hak').show();
+        $('#logo_div_hak').html(selectedImage); 
+        addDeleteButton('#logo_div_hak');
+        $('#hakkimizda_resim_input').val(selectedImage.attr('src'));
+    }
+    $('.clickable-image').removeClass('selected');
+    $('#medyaModal2').modal('hide');
+    $('.modal-backdrop').remove();
+})
+if ($('#olan_resim_hak').attr('src') !== "") {
+        $('#logo_div_hak').show();
+        addDeleteButton('#logo_div_hak');
+    } else {
+        $('#logo_div_hak').hide();
+    }
+
+$('#hakkimizda_resim_').on('click', function() {
+    $('.ekle_butonu').addClass('hakkimizda_resim');
+});
+  
+});
+function addDeleteButton(divSelector) {
+    const deleteBtn = $('<button>Sil</button>').addClass('btn btn-danger').on('click', function() {
+        $(divSelector).empty().hide();
+    });  $(divSelector).append(deleteBtn);
+}
+</script>
+{%endblock js%} 

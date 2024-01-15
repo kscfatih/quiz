@@ -1,0 +1,13 @@
+<!-- certificates/templates/certificates/certificate.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sertifika</title>
+</head>
+<body>
+    <h1>Sertifika</h1>
+    <p>Bu sertifikayı almaya hak kazanan:</p>
+    <p>{{ certificate.first_name }} {{ certificate.last_name }}</p>
+    <p>Tarih: {{ certificate.issue_date }}</p>
+</body>
+</html>

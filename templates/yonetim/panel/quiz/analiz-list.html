@@ -1,0 +1,183 @@
+{%extends 'yonetim/base/index.html'%}
+
+{%block content%}
+
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">Analiz Testleri</h4>
+            
+        </div>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+
+        <div class="card">
+         
+            <div class="card-body p-0">
+                
+                <div class="table4  p-25 bg-white mb-30">
+                    <div class="row">
+                        <!-- İlk kolon -->
+                        
+                       
+                    </div>
+
+                    
+
+
+                    <div class="table-responsive">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="number" class="form-control" id="numberInput" placeholder="Test id'si ile ara ... ">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-primary" onclick="goToURL()">Git</button>
+                            </div>
+                        </div>
+
+
+                        <table class="table mt-3" id="myTable">
+                            <thead>
+                                <tr class="userDatatable-header">
+                                    
+                                    <th>
+                                        <span >ID</span>
+                                    </th>
+                                    <th>
+                                        <span >İsim</span>
+                                    </th>
+                                    
+                                    <th>
+                                        <span >Kategori</span>
+                                    </th>
+                                    
+                                    <th>
+                                        <span >Tarih</span>
+                                    </th>
+                                    <th>
+                                        <span >Aksiyon</span>
+                                    </th>
+                                    
+                                    
+                                    
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                              {% for i in testler %}
+                                <tr>
+                                    <td>
+                                        <div class="row">
+                                        {{i.id}}    
+                                            
+                                     
+                                       
+                                            
+                                    
+                                    </div>
+                                      
+                                    </td>
+                                    <td>
+                                       
+                                        {{i.title}}
+                                        
+                                    </td>
+                                   
+                                <td>
+                                   
+                           
+                                {{i.quiz_category.title}}
+                            </td>
+                                    
+                                    <td>
+                                      
+                                      {{i.create_date}}
+                                       
+                                    </td>
+                                    
+                                    <td>
+                                       <button class="btn btn-primary mb-3" id="analizButton" data-id="{{i.id}}" onclick="openNewTab(this)">Analiz</button>
+                                       <button class="btn btn-primary" id="analizButton" data-id="{{i.id}}" onclick="openNewTab2(this)">Çekiliş</button>
+                                    
+                                    </td>
+
+                                    
+                                </tr>
+                             {% endfor %}
+                            </tbody>
+                        </table>
+                       
+                    
+                        
+
+                        
+                    </div>
+                  
+                            <div class="d-flex justify-content-end mt-30 col-md-12">
+                                <nav class="atbd-page flex-grow-1">
+                                    <ul class="atbd-pagination d-flex">
+                                    
+                                    </ul>
+                                </nav>
+                                <div class="pagination d-flex align-items-center"> <!-- 'd-flex' ve 'align-items-center' ekledik -->
+                                    {% if testler.has_previous %}
+                                        <a href="?page=1&per_page={{ testler.paginator.per_page }}" class="btn btn-light mr-2">ilk sayfa</a>
+                                        <a href="?page={{ testler.previous_page_number }}&per_page={{ testler.paginator.per_page }}" class="mr-2 btn btn-warning">önceki</a>
+                                    {% endif %}
+                                
+                                    <span class="current mx-2 mr-2"> <!-- 'mx-2' ekledik aralarında biraz boşluk olması için -->
+                                        Sayfa {{ testler.number }} / {{ testler.paginator.num_pages }}
+                                    </span>
+                                
+                                    {% if testler.has_next %}
+                                        <a href="?page={{ testler.next_page_number }}&per_page={{ testler.paginator.per_page }}" class="mr-2 btn btn-warning">sonraki</a>
+                                        <a href="?page={{ testler.paginator.num_pages }}&per_page={{ testler.paginator.per_page }}" class="mr-2 btn btn-light">son sayfa</a>
+                                    {% endif %}
+                                </div>
+            
+                                <select onchange="location = this.value;">
+                                    <option value="?page=1&per_page=5" {% if request.GET.per_page == "5" %}selected{% endif %}>5 sonuç/göster</option>
+                                    <option value="?page=1&per_page=10" {% if request.GET.per_page == "10" %}selected{% endif %}>10 sonuç/göster</option>
+                                    <option value="?page=1&per_page=100" {% if request.GET.per_page == "100" %}selected{% endif %}>100 sonuç/göster</option>
+                                </select>
+    
+                            </div>
+                    
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{%endblock content%}
+
+{% block js%}
+<script>
+    function openNewTab(buttonElement) {
+    var dataId = buttonElement.getAttribute('data-id');
+    var url = "/panel/analiz-test/" + dataId;
+    window.open(url, '_blank');
+    }
+    function openNewTab2(buttonElement) {
+    var dataId = buttonElement.getAttribute('data-id');
+    var url = "/panel/cekilis-sonuc/" + dataId;
+    window.open(url, '_blank');
+}
+function goToURL() {
+        var number = document.getElementById("numberInput").value;
+        if(number) {
+            var newURL = "https://quizvar.com/panel/analiz-test/" + number; // Buradaki "example.com" adresini istediğiniz adresle değiştirin
+            window.open(newURL, "_blank"); // "_blank" yeni sekmede açılmasını sağlar
+        } else {
+            alert("Lütfen geçerli bir sayı girin.");
+        }
+    }
+</script>
+{%endblock js%}

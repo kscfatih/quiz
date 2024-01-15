@@ -1,0 +1,572 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="{% static 'test/quiz4/assets/fonts/font.css'%}">
+    <link rel="stylesheet" href="../../../../cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css'%}" />
+    <link rel="stylesheet" href="{% static 'test/quiz4/assets/css/Bootstrap/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="{% static 'test/quiz4/assets/css/custom.css'%}">
+    <link rel="stylesheet" href="{% static 'test/quiz4/assets/css/style.css'%}">
+    <link rel="stylesheet" href="{% static 'test/quiz4/assets/css/responsive.css'%}">
+    <link rel="stylesheet" href="{% static 'test/quiz4/assets/css/animation.css'%}">
+    <link rel="stylesheet" href="{% static 'test/quiz4/assets/css/result_style.css'%}">
+
+    <style>
+        
+.centered-card {
+    position: fixed;  
+    top: 50%;         
+    left: 50%;       
+    transform: translate(-50%, -50%);
+
+    /* Renk ve Görünüm Ayarlamaları */
+    background-color: #ffffff;  
+    border: 2px solid red;     
+    border-radius: 10px;     
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    text-align: center;
+    z-index: 9999; 
+    padding: 20px; 
+}
+
+.modal-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); 
+    backdrop-filter: blur(4px); 
+    z-index: 999;
+}
+
+.start-button {
+    background-color: #007BFF;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.start-button:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+
+.red-color {
+    color: red;
+}
+
+.big-size {
+    font-size: 24px; 
+}
+
+
+.animated-cross {
+   
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.4s, transform 0.4s;
+    z-index: 9999;
+
+ 
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+.animated-image-A {
+    animation: fadeIn 1s forwards;
+    z-index: 9999; 
+    width: auto; 
+    height: 40px;
+    display: block;
+    object-fit: cover;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); 
+}
+.radio-field:hover .animated-cross {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.imgas {
+    width: 170px;     
+    height: auto;     
+    max-width: 300px; 
+}
+@media screen and (min-width: 992px) {
+    .answer-container2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+
+
+.img-op img .answer-image {
+    object-fit: cover; 
+    width: auto; 
+    height: auto;
+    margin-left:50px;
+
+}
+.image-radio-wrapper {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border: none; 
+    
+}
+.answer-image img {
+    display: none;
+}
+.checkmark2 {
+    opacity: 0;  
+    width: 100%;  
+    height: 100%; 
+    position: absolute; 
+    top: 0;
+    left: 0;
+    cursor: pointer; 
+}
+
+.responsive-video {
+    max-width: 100%;
+    height: auto;
+}
+@media (max-width: 768px) { 
+    .q-heading p img {
+        width: auto !important;
+    width: 300px !important;    
+    height: auto;     
+    max-width: 100%; 
+    
+    
+}
+.q-heading img {
+    width: auto !important;
+    width: 300px !important;  
+    height: auto;     
+    max-width: 100%; 
+    
+    
+}
+.q-heading h3 img {
+    width: auto !important;
+    width: 300px !important;   
+    height: auto;     
+    max-width: 100%; 
+    
+    
+}
+.answer-container{
+    max-width: 100%;
+    height: auto;
+}
+.nextt{
+    width: 300px;
+}
+.form-inner{
+    margin-left:50px;
+    width: 320px;
+    height: auto;
+}
+.q-heading {
+    width: 330px;     
+    height: auto;     
+    
+}
+.side-img2 {
+    width: 300px;
+    height: auto;
+    overflow: hidden; 
+}
+
+.side-img2 img {
+    max-width: 300px ;
+    max-height: 100%; 
+    display: block;
+    margin: auto; 
+    object-fit: contain; 
+}
+}
+.container_question {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.side-img2 {
+    width: 600px;
+    height: auto;
+    overflow: hidden; 
+}
+
+.side-img2 img {
+    max-width: 100%; 
+    max-height: 100%; 
+    display: block;
+    margin: auto; 
+    object-fit: contain; 
+}
+.side-img2 video {
+    max-width: 100%; 
+    max-height: 100%; 
+    display: block;
+    margin: auto; 
+    object-fit: contain; 
+}
+.step-btn {
+    transition: box-shadow 0.3s ease-in-out; 
+}
+
+.step-btn:hover {
+    box-shadow: 0 0 10px 2px red;
+}
+
+.answer-btna {
+    transition: box-shadow 0.3s ease-in-out; 
+}
+
+.answer-btna:hover {
+    box-shadow: 0 0 10px 2px rgb(255, 255, 255);
+}
+#startButton {
+    display: block;
+    margin-left: auto;
+    margin-right: 0;
+}
+.q-heading img {
+    max-width: 500px;    
+    max-height: 350px;    
+    width: auto;        
+    height: auto;    
+    display: block;       
+    margin: 0 auto;       
+}
+.image-wrapper {
+    position: relative; 
+    z-index: 1000; 
+}
+
+.custom-container {
+    position: relative;
+    z-index: 2; 
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 5px solid rgb(9, 0, 57);
+    border-radius: 15px; 
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    background-color: #FFFFFF; 
+    opacity: 1; 
+        }
+#endMessage {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+}
+@media (min-width: 1024px) {
+    .nextt {
+        margin-right: 250px;
+        margin-bottom: 20px;
+    }
+    .step-bar{
+
+        margin-left:200px;
+        
+    }
+    .mobil-puan {
+        display : none;
+    }
+  
+
+}
+
+.answer-letter {
+    display: inline-block;
+    width: 25px;  
+    text-align: center;
+    vertical-align: middle;
+    line-height: 25px;  
+}
+.top-left-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.7); 
+    color: white; 
+    padding: 5px 15px; 
+    border: 2px solid white;
+    z-index: 1000; 
+}
+.spanss {
+    display: none;
+    font-size: 30px; 
+    font-weight: 700;
+ 
+    margin: 0 auto; 
+
+    color: red; 
+}
+.card {
+background: white; /* Arka planı beyaz yapar. */
+border-radius: 15px; /* Köşeleri kıvrımlı yapar. */
+width: auto;
+
+box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); /* Hafif bir gölge ekler. */
+padding: 20px; /* İçerik ile kenarlar arasında boşluk bırakır. */
+}
+@media only screen and (max-width: 768px) {
+    .radio-field {
+        float: none; 
+        width: 100%; 
+        
+    }
+  
+}
+
+.radio-field {
+    position: relative;
+    padding-left: 40px; 
+}
+
+.answer-letter {
+    position: absolute;
+    left: 10px; 
+    top: 50%;
+    transform: translateY(-50%); 
+    z-index: 1;
+}
+
+.checkmark {
+    position: relative;
+    z-index: 2; 
+}
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255,1);
+    z-index: 9998; 
+    pointer-events: none;
+    pointer-events: all;
+}
+
+.overlay {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 1); 
+    z-index: 1000;
+}
+
+.alert-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 1);
+    text-align: center;
+}
+
+.step-number {
+    position: fixed;
+    top: 0;
+    right: 0; 
+    background-color: rgb(251, 255, 0); 
+    color:rgb(13, 5, 67);
+    padding: 20px; 
+    z-index: 1000; 
+    border-bottom-left-radius: 10px;
+}
+
+.step-number-inner {
+    font-size: 40px;
+    font-weight: bold;
+    text-align: right; 
+}
+@media (max-width:700px){
+    .step-number {
+        position: fixed;
+        top: 0;
+        right: 0; 
+        background-color: rgb(251, 255, 0); 
+        color:rgb(13, 5, 67);
+        padding: 5px; 
+        z-index: 1000; 
+        border-bottom-left-radius: 10px;
+    }
+
+    .step-number-inner {
+        font-size: 15px;
+        font-weight: bold;
+        text-align: right; 
+    }
+}
+
+    </style>
+
+</head>
+<body>
+    <div class="overlay" id="overlay">
+        <div class="alert-card">
+            Bu sınav henüz açılmamıştır.<br>
+            <a href="/">  <button class="btn btn-primary">Quizvar.com'a Git</button></a>
+        </div>
+    </div>
+    <div class="overlay" id="overlay2">
+        <div class="alert-card">
+            Bu sınava zaten girdiniz !<br>
+          <a href="/">  <button class="btn btn-primary">Quizvar.com'a Git</button></a>
+        </div>
+    </div>
+    <div id="warning-card" class="centered-card" style="display: none; position: fixed; z-index: 9999;">
+        <p style="color: red; font-size: large;">Zaten sınava girdiniz!</p><br>
+        <a href="/">  <button class="btn btn-primary">Quizvar.com'a Git</button></a>
+    </div>
+    <div id="modal-background" class="modal-background" style="display:none;"></div>
+    <div class="centered-card" id="centered-card" style="display: none; ">
+        <div class="card-content-c" id="card-content-c">
+           
+        </div>
+        <button  class="start-button " id="baslat">Başlat</button>
+    </div>
+    <div id="endMessage">
+        Süreniz Bitti!
+        <br>
+        <button onclick="location.reload();">Yeniden Başla</button>
+    </div>
+    <form id="quiz-form" method="POST">
+       
+        <div class="top-left-box" id="timerDiv">
+            
+            Kalan süre :<span id="timer" ></span>sn
+          </div>
+          <input type="hidden" name="timer" id="gecen_sure">
+     </div>
+   
+    
+    <input type="hidden" name="k_id" id="k_id">
+
+    <main class="overflow-hidden">
+        <div class="custom-container" id="custom-container" style="display: none;">
+            <h2 class="mb-2" style="color: rgb(13, 2, 85);">QUİZVAR BİLGİ FORMU </h2><br>
+            <span class="mb-2" style="font-size:14px; color: red;"><b>UYARI !</b> Sınava sadece 1 kez giriş hakkınız bulunmaktadır. Sınav süresince pencereyi yenilemeyin ve sınavı kapatmayın ! Form bilgilerini eksiksiz doldurun !</span>
+            <div class="bilgi-formu">
+              
+                {%csrf_token%}
+            </div>
+        </div>
+        <div class="step-number">
+            <div class="step-number-inner">
+            Soru <span id="activeStep">1</span> - <span class="soru-sayisi-sol"></span><br></div>  </div>
+         </div>
+        
+
+
+        <div class="row">
+            <div class="col-md-1 tab-100">
+
+            </div>
+            <div class="card questions-card  col-md-7 tab-100" style="margin-top: 100px;margin-bottom: 100px;" >
+                <input type="hidden" id="quiz_id" value="{{id}}">
+                <span class="spanss" >Soru <span id="activeStep2">1</span>:</span>
+                <div class="card-header" style="background-color: white;">
+                    <div class="side-img">
+                    
+                        <div class="side-img2 ">
+                           
+                        </div>
+    
+                    </div>
+                </div>
+                
+                <div class="section-container" id="show-section"></div>
+
+                <div class="question overflow-hidden">
+                        
+                </div>
+               
+            </div>
+            <div class="questions-card col-md-4 tab-100">
+               
+        
+                
+              <img class="avatar"   src="{% static 'test/quiz4/assets/images/avatar.png'%}" style="margin-left:100px;" alt="avatar">
+            </div>
+        </div>
+        
+               
+        <div class="loadingresult">
+            <img src="{% static 'test/quiz4/assets/images/loading.gif'%}" alt="loading">
+        </div>
+        <div class="result_page">
+            <div class="result_inner">
+                <div class="result_inner2">
+                    <h2>Sonuçlar</h2>
+                    <div class="result_show2"></div>
+                    
+                    <div class="p_result">
+                        <div class="p_score">Skor:  </div>
+                        <input type="hidden"  name="skor" id="dogru_puan_" >
+                        <div name="skor" style="font-size:20px;" class="p_prcnt dogru_puan">
+                           
+                        </div>
+                        <span class="mobil-puan">50</span>  <span> Puan</span> 
+                    </div>
+                    <div class="line"></div>
+                    <div class="result_show">
+                        <h2 class="testi_gecti">Testi Geçemediniz !</h2>
+                        <div class="ser_kont">
+                        <div class="pass_check sertifika">
+                            <i class="fa-solid fa-xmark "></i>Sertifika İndir
+                        </div>
+                        </div>
+                        <br>
+                        <div class="pass_check ">
+                         <a href="/"> Quizvar.com'a Git</a> 
+                        </div>
+                        <div class="result_msg">
+                            Better Luck Next Time!
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="dogru_sayisi" value="" id="dogru_sayisi">
+                <input type="hidden" name="yanlis_sayisi" value="" id="yanlis_sayisi">
+                <img class="behind_bg" src="{% static 'test/quiz4/assets/images/bh-clip.png'%}" alt="rectangle">
+            </div>
+        </div>
+    </main>
+    <div id="error"></div>
+    <script src="{% static 'test/quiz4/assets/js/Bootstrap/bootstrap.min.js'%}"></script>
+    <script src="{% static 'test/quiz4/assets/js/jQuery/jquery-3.6.3.min.js'%}"></script>
+    <script src="{% static 'test/quiz4/assets/js/custom.js'%}"></script>
+    <script src="{% static 'test/quiz4/assets/js/result.js'%}"></script>     
+</body>
+</html>

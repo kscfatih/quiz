@@ -1,0 +1,167 @@
+{%extends 'frontend/base/index.html'%}
+{% load custom_filters  %}
+
+{%block css%}
+<style>
+    table {
+    width: 100%;
+}
+</style>
+{%endblock css%}
+{%block title%} <title>Test Sonuçları</title>{%endblock title%}
+
+{%block menu%} {%include 'frontend/base/inc/menu.html'%} {%endblock menu%}
+
+{%block head%}
+<section class='page_title wave'>
+    <div class='container'>
+        <div class='title'>
+            <h1>Test Sonuçları</h1></div>
+        <nav class="bread-crumbs"><a href="index-2.html" >Ana sayfa</a><i class="delimiter fa fa-chevron-right"></i><span class="current">{{ alt_kategori.name }}</span></nav>
+        <!-- .breadcrumbs -->
+    </div>
+    <canvas class='breadcrumbs' data-bg-color='#f8f2dc' data-line-color='#f9e8b2'></canvas>
+</section>
+
+{%endblock head%}
+
+{%block main%}
+<div id="main" class="site-main">
+    <div class="page_content">
+        <!-- pattern container / -->
+        <div class='left-pattern pattern pattern-2'></div>
+        <main>
+            
+
+          
+            <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                            crossorigin="anonymous"></script>
+                       <!-- sonuc ust -->
+                       <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-client="ca-pub-4930971127953627"
+                            data-ad-slot="2820582990"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"></ins>
+                       <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                       </script>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+   
+               
+            
+       
+            
+            <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                <div class='grid_col grid_col_12'>
+
+                    <div class='ce clearfix'>
+                        
+                        
+                     
+                        <div>
+                           
+                        {% if analiz_yayin.durum == '1' %}
+                            <a  href="/cekilis-sonuc/{{ test_id }}" class=" cws_button alt xlarge"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Çekiliş Sonuçlarına Git</span></a>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Sıra Numarası</th>
+
+                                    {% for field in display_fields %}
+                                        <th>{{ field }}</th>
+                                    {% endfor %}
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+
+
+                                {% for sonuc in sonuclar %}
+                                
+                                    <tr>
+                                        {% load custom_filters %}
+                                        <td>{{ forloop.counter0|add:first_item_number|add:1 }}</td>
+                                        {% for field in display_fields %}
+                                            {% with slug=field_slugs|get_value_from_dict:field %}
+                                                {% if slug == "Skor" %}
+                                                    <td>{{ sonuc.score }}</td>
+                                                {% elif slug == "Tarih" %}
+                                                    <td>{{ sonuc.create_date }}</td>
+                                                    {% elif slug == "Doğru Sayısı" %}
+                                                    <td>{{ sonuc.dogru }}</td>
+                                                    {% elif slug == "Yanlış Sayısı" %}
+                                                    <td>{{ sonuc.yanlis }}</td>
+                                                    {% elif slug == "Süre" %}
+                                                    <td>{{ sonuc.duration }} sn</td>
+                                                {% else %}
+                                                    <td>{{ sonuc.fields|get_value_from_dict:slug }}</td>
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <select id="per_page" onchange="location = '' + this.value + '&page=1';">
+                            <option value="?per_page=5" {% if request.GET.per_page == "5" %}selected{% endif %}>5</option>
+                            <option value="?per_page=10" {% if request.GET.per_page == "10" %}selected{% endif %}>10</option>
+                            <option value="?per_page=50" {% if request.GET.per_page == "50" %}selected{% endif %}>50</option>
+                            <option value="?per_page=100" {% if request.GET.per_page == "100" %}selected{% endif %}>100</option>
+                        </select>
+
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if sonuclar.has_previous %}
+                                    <a href="?per_page={{ request.GET.per_page|default:"5" }}&page=1">&laquo; ilk</a>
+                                    <a href="?per_page={{ request.GET.per_page|default:"5" }}&page={{ sonuclar.previous_page_number }}">Önceki</a>
+                                {% endif %}
+                            
+                                <span class="current">
+                                    Sayfa {{ sonuclar.number }} / {{ sonuclar.paginator.num_pages }}
+                                </span>
+                            
+                                {% if sonuclar.has_next %}
+                                    <a href="?per_page={{ request.GET.per_page|default:"5" }}&page={{ sonuclar.next_page_number }}">Sonraki</a>
+                                    <a href="?per_page={{ request.GET.per_page|default:"5" }}&page={{ sonuclar.paginator.num_pages }}">Son &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                        {%else%}  
+                       <span style="color:red;">{{test.yayinlanma_mesaji|safe}}  </span> 
+                        {%endif%} 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+          
+          
+        </main>
+        <div class='right-pattern pattern pattern-2'></div>
+        <div class="footer_image"></div>
+    </div>
+    <!-- svg filter -->
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" style='display:none;'>
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+    <!-- svg filter / -->
+</div>
+{%endblock main%}

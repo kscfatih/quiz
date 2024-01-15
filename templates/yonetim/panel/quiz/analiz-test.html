@@ -1,0 +1,338 @@
+{%extends 'yonetim/base/index.html'%}
+
+{%block css%}
+<style>
+   td {
+   max-width: 30px;
+  white-space: normal; 
+}
+.step-links {
+    display: flex;
+    align-items: center;  /* Vertikal ortalamak için (opsiyonel) */
+    gap: 10px;  /* Öğeler arasında boşluk bırakmak için (opsiyonel) */
+}
+.step-links a, .step-links .current {
+    margin-right: 10px;  /* Sağ tarafa boşluk ekler */
+}
+.step-links {
+    display: grid;
+    grid-auto-flow: column;  /* Yatay sıralama */
+    gap: 10px;  /* Öğeler arasında boşluk bırakmak için */
+}
+/* Tablonun genel border ayarlarını kaldır */
+table {
+    border-collapse: separate; /* border-collapse ayarını 'separate' yap */
+    border-spacing: 0; /* border aralığını 0 yap */
+}
+
+/* Tüm td elemanlarının borderlarını kaldır */
+table td {
+    border: none;
+}
+
+/* İlk td için sol üst ve sağ köşeleri yumuşat */
+table tr td:first-child {
+    border-top-left-radius: 10px; /* sol üst köşe */
+    border-bottom-left-radius: 10px; /* sol alt köşe */
+}
+
+/* Son td için sağ üst ve alt köşeleri yumuşat */
+table tr td:last-child {
+    border-top-right-radius: 10px; /* sağ üst köşe */
+    border-bottom-right-radius: 10px; /* sağ alt köşe */
+}
+table td{
+    width: 160px;
+}
+table th{
+    width: 160px;
+}
+</style>
+{%endblock css%}
+
+
+{%block content%}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert-big alert alert-success" role="alert">
+            <div class="alert-content">
+                <h6 class="alert-heading">Success</h6>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">{{test.title}}</h4>
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <form method="get" action="">
+                    <div style="display: flex;">
+                        <input type="text" name="arama_terimi" class="form-control ih-medium ip-gray radius-xs b-light px-15 mb-3 mt-3" placeholder="Öğrenci bilgisi ara ..." value="{{ request.GET.arama_terimi }}" style="flex: 1;">
+                        <input type="submit" class="form-control btn btn-primary mt-3 ml-3" value="Ara">
+                    </div>
+                </form>
+            </div>
+            <div class="card-body p-0">
+                <div class="table4  p-25 bg-white mb-30">
+                  
+                    <form method ="POST">
+                    <div class="row">       
+                      
+                            <input type="hidden" name="test_id" value="{{id}}" id="test-id">
+                        <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLabel">Gösterilecek Alanlar</h5>
+                                  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row col-md-12">
+                                        <div class="col-md-12">
+                                            <h1>Şuan Görünen Alanlar <span style="font-size:14px;">(Görünen alanları güncellemek için silin ve yeni eklemek istediğiniz alanı seçin.)</span></h1>
+                                        </div>
+                                        
+                                        {% for i in sonuclar_alanlar %}
+                                        
+                                        <div class="col-md-4">
+
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    {{ i.alan }}
+                                                    <button type="button" class="btn btn-danger delete-btn" data-id="{{ i.id }}">Sil</button>
+                                                </div>
+                                            </div>
+                                        
+                                        </div>
+                                        {% endfor %}
+
+                                   
+                                        <div class="col-md-12">
+                                
+                                        {% for i in list %}
+                                        <input type="checkbox"  name="alan[]" value="{{i}}" > {{i}} </input> <br>
+                                        {% endfor %}
+                                        <input type="checkbox"  name ="alan[]" value="Yanlış Sayısı" > Yanlış Sayısı </input> <br>
+                                        <input type="checkbox"  name ="alan[]" value="Doğru Sayısı" >  Doğru Sayısı </input> <br>
+                                        <input type="checkbox"  name ="alan[]" value="Skor" > Skor </input> <br>
+                                        <input type="checkbox"  name ="alan[]" value="Süre"> Süre </input> <br>
+                                        <input type="checkbox" name ="alan[]" value="Tarih"> Tarih </input> <br>
+                                    </div>
+                                    
+                                 
+                                    </div>
+                                    </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                                  <button type="button" data-dismiss="modal" class="btn btn-primary kaydet">Kaydet</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                                        
+                        {% csrf_token %}                    
+                        <div class="col-md-4">
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="durum" value="1" {%if analiz_yayin.durum == '1' %} checked {%endif%} id="radio-hl11" >
+                                                    <label for="radio-hl11">
+                                                        
+                                                        <span class="radio-text">Yayınlandı</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="durum" value="0" {%if analiz_yayin.durum == '0' %} checked {%endif%} id="radio-hl21">
+                                                    <label for="radio-hl21">
+                                                        <span class="radio-text">Yayınlanmadı</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-warning mt-2" data-toggle="modal" data-target="#myModal">Alanlar</button>
+
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <a href="/panel/export-excel/{{id}}" target="_blank" class="btn btn-primary">Excel Olarak İndir</a>  
+                            <a href="/panel/analiz-sonuc-panel/{{id}}" target="_blank" class="btn btn-primary mb-3 mt-2">Karışmış Sonuç</a>        
+                        </div>   
+                        <div class="col-md-4">
+                            <input  id="karis_syi" class="form-control ih-medium ip-gray radius-xs b-light px-15 mb-3" name="sayi_karistir" type="text"  placeholder="Karıştırılacak Sayıyı girin ...">
+                           
+                        </div> 
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary fomr-control mb-3 kaydetbuton">Kaydet</button>
+                           
+                        </div>   
+                  
+                    </div>
+                </form>
+                    <div class="table-responsive">
+                        <table class="table mb-0" id="myTable">                           
+                            <thead>
+                                <tr class="userDatatable-header">
+                                    <th>Sayı</th>
+                                    {% for i in list %}
+                                    <th>
+                                        <span >{{i}}</span>
+                                    </th>
+                                    {%endfor%}
+                                    <th>
+                                        <span >Yanlış Sayısı</span>
+                                    </th>
+                                    <th>
+                                        <span >Doğru Sayısı</span>
+                                    </th>                                   
+                                    <th>
+                                        <span >Skor</span>
+                                    </th>
+                                    <th>
+                                        <span >Süre</span>
+                                    </th>
+                                    <th>
+                                        <span >Tarih</span>
+                                    </th>
+                                    <th>
+                                        <span >Sil</span>
+                                    </th>                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+
+
+                                {{durum}}
+
+
+                                {% for sonuc in page_obj %}
+                              {%if sonuc.fields.status == 'finished'%}
+                                <tr>
+                                     <td>  {{ forloop.counter|add:offset }}</td>
+                                    
+                                    {% for value in sonuc.fields.fields.values %}
+                                    <td>{{ value }}</td>
+                                {% endfor %}
+                        
+                                    <td>
+                                        {{sonuc.fields.yanlis}}
+                                    </td>
+
+                                    <td>
+                                        {{sonuc.fields.dogru}}
+                                    </td>
+                                    <td class="skor">
+                                        {{sonuc.fields.score}}
+                                    </td>
+                                    <td>
+                                        {{sonuc.fields.duration}}
+                                    </td>
+                                   
+
+                                    <td>
+                                      <span class="iso-date"> {{ sonuc.fields.create_date|date:"d F Y H:i"  }}</span> 
+                                    </td>
+                                    
+                                    <td>
+                                        <button class="btn btn-danger analiz-sil mr-3" style="width: 25px;" data-id="{{sonuc.pk}}"> Sil </button> 
+                                      </td>
+                                 
+                                </tr>
+                                {%endif%}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if page_obj.has_previous %}
+                                    <a href="?results_per_page={{ request.GET.results_per_page|default:"5" }}&page=1" class="btn btn-primary mt-3">&laquo; İlk</a>
+                                    <a href="?results_per_page={{ request.GET.results_per_page|default:"5" }}&page={{ page_obj.previous_page_number }}" class="btn btn-primary mt-3">Önceki</a>
+                                {% endif %}
+                            
+                                <span class="current mt-3">
+                                    Sayfa {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                                </span>
+                            
+                                {% if page_obj.has_next %}
+                                    <a href="?results_per_page={{ request.GET.results_per_page|default:"5" }}&page={{ page_obj.next_page_number }}" class="btn btn-primary mt-3">Sonraki</a>
+                                    <a href="?results_per_page={{ request.GET.results_per_page|default:"5" }}&page={{ page_obj.paginator.num_pages }}" class="btn btn-primary mt-3">Son</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                                <form method="get">
+                                    <select id="results_per_page" onchange=" location = '?results_per_page=' + this.value + '&page=1';">
+                                        <option value="5" {% if request.GET.results_per_page == "5" %}selected{% endif %}>5</option>
+                                        <option value="10" {% if request.GET.results_per_page == "10" %}selected{% endif %}>10</option>
+                                        <option value="20" {% if request.GET.results_per_page == "20" %}selected{% endif %}>20</option>
+                                        <option value="50" {% if request.GET.results_per_page == "50" %}selected{% endif %}>50</option>
+                                        <option value="100" {% if request.GET.results_per_page == "100" %}selected{% endif %}>100</option>
+                                    </select>
+                                </form>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{%endblock content%}
+
+{%block js%}
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const skorCells = document.querySelectorAll('td.skor');
+
+    skorCells.forEach(cell => {
+        const value = parseInt(cell.textContent, 10);
+        const parentRow = cell.parentElement; // tr elementini al
+
+        if (!isNaN(value)) {
+            const MAX_COLOR_VALUE = 200;  // Renklerin maksimum değerini 200 olarak sınırlayarak soluk renkler elde edelim.
+            const red = Math.floor(MAX_COLOR_VALUE - (value * (MAX_COLOR_VALUE / 100)));
+            const green = Math.floor(value * (MAX_COLOR_VALUE / 100));
+            const alpha = 0.6;  // %60 opaklık
+
+            parentRow.style.backgroundColor = `rgba(${red}, ${green}, 0, ${alpha})`; // tr'nin arkaplanını değiştir
+        }
+
+        $(".delete-btn").click(function() {
+        var id = $(this).data('id');
+        $.get('/panel/sonuc-alani-sil/' + id, function(data) {
+            if (data.success) {
+              
+                $("[data-id='" + id + "']").closest('.card').remove();
+            } else {
+                
+                $("[data-id='" + id + "']").closest('.card').remove();
+            }
+        });
+    });
+        
+    });
+    $(document).ready(function(){
+    $('.analiz-sil').on('click', function(){
+        var dataId = $(this).attr('data-id'); 
+        var url = '/panel/analiz-sil/' + dataId; 
+        window.location.href = url; 
+    });
+    
+  
+});
+});
+
+</script>
+
+{%endblock js%}

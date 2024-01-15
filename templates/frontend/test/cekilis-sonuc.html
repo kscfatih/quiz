@@ -1,0 +1,155 @@
+{%extends 'frontend/base/index.html'%}
+{% load custom_filters  %}
+{%block css%}
+<style>
+    .h3a {
+    text-align: center;
+    color: #1a1a19;
+    margin: 0;
+     padding: 5px;
+    font-weight: bold;
+    }
+    .h3s {
+    text-align: center;
+    color: #26b4d7;
+    margin: 0;
+     padding: 5px;
+    font-weight: bold;
+    font-size: 40px;
+    }
+    .test-header {
+    display: flex;
+    
+    flex-direction: column;
+    align-items: center; /* Yatayda ortala */
+    justify-content: center; /* Dikeyde ortala */
+    height: 30vh; /* Bu örnek için ekranın tam yüksekliğini kaplaması için. Gereksinimlere bağlı olarak bu değeri değiştirebilirsiniz. */
+    }
+    .test-headera {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Yatayda ortala */
+    justify-content: center; /* Dikeyde ortala */
+    height: 50vh; /* Bu örnek için ekranın tam yüksekliğini kaplaması için. Gereksinimlere bağlı olarak bu değeri değiştirebilirsiniz. */
+    }
+    .test-headera h3,  /* .test-header içerisindeki h3 etiketleri için */
+.test-header p {  /* .test-header içerisindeki p etiketleri için, diğer etiketleri ekleyebilirsiniz */
+    font-size: 20px;  /* istediğiniz font boyutunu buraya yazın */
+}
+.grid_row_ {
+    border: 4px solid #26b4d7; 
+    border-radius: 15px; /* Mavi renkli ve 4px kalınlığında bir çerçeve */
+    padding: 10px;
+}
+</style>
+{%endblock css%}
+{%block title%} <title> Çekiliş Sonuçları</title>{%endblock title%}
+
+{%block menu%} {%include 'frontend/base/inc/menu.html'%} {%endblock menu%}
+
+{%block head%}
+<section class='page_title wave'>
+    <div class='container'>
+        <div class='title'>
+            <h1 >Çekiliş Sonuçları</h1></div>
+        <nav class="bread-crumbs"><a href="index-2.html" >Ana sayfa</a><i class="delimiter fa fa-chevron-right"></i><span class="current">Çekiliş Sonuçları</span></nav>
+        <!-- .breadcrumbs -->
+    </div>
+    <canvas class='breadcrumbs' data-bg-color='#f8f2dc' data-line-color='#f9e8b2'></canvas>
+</section>
+
+{%endblock head%}
+
+{%block main%}  
+<div id="main" class="site-main">
+    <div class="page_content">
+        <!-- pattern container / -->
+        <div class='left-pattern pattern pattern-2'></div>
+        <main>
+
+        {%if cekilis%}
+            <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <h3 class="h3s">{{cekilis.baslik}}</h3>
+                                <div>
+                                    <h3 class="h3a">{{cekilis.aciklama}}</h3>
+                                </div>
+                    </div>
+                </div>
+            </div>
+           
+            {% for i in cekilis_alan %}
+            <div class='grid_row clearfix grid_row_ ' style='padding-top: 50px;padding-bottom: 50px;'>
+            
+                <div class='grid_col grid_col_12 '>
+                    <div class='ce clearfix'>
+                        <h3 class="ce_title">{{i.ad_soyad}}</h3>
+                                <div>
+                                    <p>
+                                        <a href="{{i.resim}}" class="cws_img_frame image-popup fancy alignleft"><img class="size-medium image-type alignleft" src="{{i.resim}}" width="150" height='150' alt="portfolio_6" /></a>{{i.aciklama}}</p>
+                                    <ul>
+                                        <li>Sınıf : {{i.sinif}} </li>
+                                        <li>Okul : {{i.okul}}</li>
+                                        <li>Kazandığı Hediye : {{i.urun}}</li>
+                                        <li>Açıklama : {{i.aciklama}}</li>
+                                    </ul>
+                                </div>
+                    </div>
+                </div>
+            </div>
+            <div class='grid_row clearfix  ' style='padding-top: 50px;padding-bottom: 50px;'>
+            
+                <div class='grid_col grid_col_12 '>
+                    <div class='ce clearfix'>
+                                <div>
+                                    <hr>
+                                </div>
+                    </div>
+                </div>
+            </div>
+            {%endfor%}
+            <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+              
+                                <div>
+                                  {{cekilis_mesaji|safe}}          {{error}}
+                                </div>
+                    </div>
+                </div>
+            </div>
+        {%else%}
+
+           <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+              
+                                <div>
+                                  {{cekilis_mesaji|safe}}          {{error|safe}}
+                                </div>
+                    </div>
+                </div>
+            </div>
+            {%endif%}
+          
+          
+        </main>
+        <div class='right-pattern pattern pattern-2'></div>
+        <div class="footer_image"></div>
+    </div>
+    <!-- svg filter -->
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" style='display:none;'>
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+    <!-- svg filter / -->
+</div>
+
+
+{%endblock main%}

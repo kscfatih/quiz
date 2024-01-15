@@ -1,0 +1,141 @@
+{%extends 'frontend/base/index.html'%}
+{% load custom_filters  %}
+{%block title%} <title> Blog</title>{%endblock title%}
+
+{%block menu%} {%include 'frontend/base/inc/menu.html'%} {%endblock menu%}
+
+{%block head%}
+<section class='page_title wave'>
+    <div class='container'>
+        <div class='title'>
+            <h1>{{kategori.title}}</h1></div>
+        <nav class="bread-crumbs"><a href="" >Ana sayfa</a><i class="delimiter fa fa-chevron-right"></i><span class="current">Blog</span></nav>
+       
+    </div>
+    <canvas class='breadcrumbs' data-bg-color='#f8f2dc' data-line-color='#f9e8b2'></canvas>
+</section>
+
+{%endblock head%}
+
+{%block main%}  
+<div id="main" class="site-main">
+    <div class="page_content single_sidebar">
+        <div class='left-pattern pattern pattern-2'></div>
+        <div class='container'>
+            <aside class='sb_right'>
+                <div class="cws-widget">
+                    <div class="widget-title">Öne Çıkanlar</div>
+                    {% for x in yazilar %}
+                    {% if x.one_cikan == "1" %}
+                    <div class='post_item'>
+                        <div class='post_preview clearfix'>
+                            <a href='/blog/view/{{x.id}}' class='post_thumb_wrapp pic'><img class='post_thumb' src='{{x.resim}}' alt />
+                                <div class='hover-effect'></div>
+                                <div class='links'><span class='fa fa-link'></span></div>
+                            </a>
+                            <div class='post_title'><a href='/blog/view/{{x.id}}'>{{x.baslik|safe}}</a></div>
+                            <div class='post_content'>{{ x.icerik|striptags|safe|truncatewords:10 }} <a href='/blog/view/{{x.id}}' > Devamını oku</a></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+
+                    <div class="widget-title">Kategoriler</div>
+                    {% for i in kategoriler %}
+                    <div class='post_item'>
+                        <div class='post_preview clearfix'>
+                            <a href='/blog/kategori/{{i.id}}' class='post_thumb_wrapp pic'>
+                              
+                            </a>
+                            <div class='post_title'><a href='/blog/kategori/{{i.id}}'>{{i.title|safe}}</a></div>
+                            
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                 
+                </div>
+                
+            </aside>
+      
+            <main>
+                <div class="grid_row">
+                    <section class="news news-large">
+                        <div class="cws_wrapper">
+                            <div class="grid">
+                                {% for post in page_obj %}
+                                {%if post.durum == "1"%}
+                                <article class='item large'>
+                                    <div class='post_header_def_post'>
+                                        <div class="date">
+                                            <div class='date-cont'><span class='day'>{{ post.tarih.day }}</span><span class='month' title='{{ post.tarih|date:"F" }}'><span>{{ post.tarih|date:"M" }}</span></span><span class='year'>{{ post.tarih.year }}</span><i class='springs'></i></div>
+                                        </div>
+                                        <div class="post_info_header">
+                                            <h3 class="ce_title"><a href="">{{ post.baslik }}</a></h3>
+                                        </div>
+                                    </div>
+                                    <div class='media_info_wrapper'>
+                                        <div class="media_part">
+                                            <div class='pic'>
+                                                <img src='{{ post.resim }}' alt />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='post_content_wrap'>
+                                        <div class='post_content'>
+                                            <p>{{ post.icerik|safe|truncatewords:50|striptags }} <a href="/blog/view/{{post.id}}" class="more-link">[&#8230;]</a></p>
+                                        </div>
+                                        <div class='meta_cont_wrapper'>
+                                            <div class='meta_cont'>
+                                                <div class="post_info">
+                                                    <div class='post_categories'>
+                                                        <i class='fa fa-bookmark'></i>
+                                                        <a href="#" rel="category tag">{{ post.kategori.title }}</a>
+                                                    </div>
+                                                </div>
+                                                <div class='button_cont'><a href="/blog/view/{{post.id}}" class='cws_button small'>Daha fazla oku</a></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class='separator-box'>
+                                        <canvas class='separator' width='1170' data-line-color='#f9e8b2'></canvas>
+                                    </div>
+                                </article>
+                                {%endif%}
+                                {% endfor %}
+                            </div>
+                            <div class='pagination'>
+                                <div class='page_links'>
+                                    
+                                    {% for i in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == i %}
+                                    <span class='page-numbers current'>{{ i }}</span>
+                                    {% else %}
+                                    <a class='page-numbers' href="?page={{ i }}">{{ i }}</a>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                    <a class="next page-numbers" href="?page={{ page_obj.next_page_number }}"><i class='fa fa-angle-right'></i></a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+        <div class='right-pattern pattern pattern-2'></div>
+        <div class="footer_image"></div>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" style='display:none;'>
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+</div>
+
+{%endblock main%}  

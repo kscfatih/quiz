@@ -1,0 +1,807 @@
+{%extends 'yonetim/base/index.html'%}
+
+{%block css%}
+<style>
+    #logo_div {
+    width: 200px;
+    height: 45px;
+    overflow: hidden;  
+    position: relative;  
+}
+
+#logo_div img {
+    max-width: 100%;  
+    height: auto;    
+    object-fit: contain;   
+    position: absolute;   
+    top: 50%;     
+    left: 50%;   
+    transform: translate(-50%, -50%);   
+}
+#logo_div_ana {
+    width: 400px;
+    height: 250px;
+    overflow: hidden;  
+    position: relative;  
+}
+
+#logo_div_ana img {
+    max-width: 100%;  
+    height: auto;    
+    object-fit: contain;   
+    position: absolute;   
+    top: 50%;     
+    left: 50%;   
+    transform: translate(-50%, -50%);   
+}
+
+#logo_div_hak {
+    width: 400px;
+    height: 250px;
+    overflow: hidden;  
+    position: relative;  
+}
+
+#logo_div_hak img {
+    max-width: 100%;  
+    height: auto;    
+    object-fit: contain;   
+    position: absolute;   
+    top: 50%;     
+    left: 50%;   
+    transform: translate(-50%, -50%);   
+}
+</style>
+{%endblock css%}
+
+{%block content%}
+<style>
+    .modal-dialog {
+        max-height: 80vh;
+        overflow-y: initial !important;
+    }
+    .modal-body {
+        height: 60vh;
+        overflow-y: auto;
+    }
+    #medyaList > div {
+    cursor: pointer; /* Fare imlecini el şeklinde göster */
+}
+
+
+
+    </style>
+<style>
+    .img-container {
+        width: 125px;
+        height: 125px;
+        overflow: hidden;
+        margin: 10px;
+        display: inline-block;
+    }
+    .img-container img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .selected {
+        border: 2px solid blue;
+    }
+
+
+    .media-grid {
+    display: grid;
+    gap: 20px;
+}
+
+/* For images and videos */
+.media-grid.images, .media-grid.videos {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* For music */
+.media-grid.music {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+    
+</style>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert-big alert alert-success" role="alert">
+            <div class="alert-content">
+                <h6 class="alert-heading">Success</h6>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="row">
+    <div class="col-12">
+
+        <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">Site Ayarları</h4>
+            
+        </div>
+
+    </div>
+    <div class="col-12">
+        <div class="card card-default card-md mb-4">
+            
+            <div class="card-body">
+                <div class="tab-wrapper">
+                    <div class="atbd-tab tab-horizontal">
+                        <form method="POST">
+                        <ul class="nav nav-tabs vertical-tabs" role="tablist">
+
+                            <li class="nav-item">
+                                <a class="nav-link active" id="tab-v-1-tab" data-toggle="tab" href="#tab-v-1" role="tab" aria-controls="tab-v-1" aria-selected="true">Genel</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-v-2-tab" data-toggle="tab" href="#tab-v-2" role="tab" aria-controls="tab-v-2" aria-selected="false">Menü Yönetimi</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-v-3-tab" data-toggle="tab" href="#tab-v-3" role="tab" aria-controls="tab-v-3" aria-selected="false">Slider Yönetimi</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-v-4-tab" data-toggle="tab" href="#tab-v-4" role="tab" aria-controls="tab-v-4" aria-selected="false"></a>
+                            </li>
+                            <li class="nav-item ml-auto">
+                            <div class="col-md-6">
+                                <div class="layout-button mt-0 mb-3">
+                                    <button type="submit" style="width: 100px;" class="btn btn-primary  ">Kaydet</button>
+                                </div>
+                            </div>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content">
+
+                            {%include 'yonetim/frontend/inc/resim-modal.html'%}
+
+                            <div class="tab-pane fade show active" id="tab-v-1" role="tabpanel" aria-labelledby="tab-v-1-tab">
+                                <div class="row">
+                                    <div class="col-md-6 mb-25">
+                                        <label for="site_title" class=" color-dark fs-14 fw-500 align-center">Title </label>
+                                        <input type="text" name="site_title" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="site_title" value="{{site_ayar.title}}" >
+                                    </div>
+                                    <div class="col-md-3 mb-25">
+                                        <label for="logo_goster" class="color-dark fs-14 fw-500 align-center">Logo Ekle</label>
+                                        <button type="button" class="btn btn-primary answer-image" id="logo_goster" data-toggle="modal" data-target="#medyaModal2">Medya Ekle
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-25">
+                                        <label for="logo_div" class="color-dark fs-14 fw-500 align-center">Logo</label>
+                                        <div id="logo_div"  ><img src="{{site_ayar.logo}}" id="olan_resim" ></div>
+                                        <input type="hidden" name="site_logo" id="logo">
+                                    </div>
+                                    <div class="col-md-6 mb-25">
+                                        <label for="site_email" class=" color-dark fs-14 fw-500 align-center">E-mail </label>
+                                        <input type="text" name="site_email" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="site_email" value="{{site_ayar.email}}" >
+                                    </div>
+                                    <div class="col-md-6 mb-25">
+                                        <label for="site_telefon" class=" color-dark fs-14 fw-500 align-center">Telefon </label>
+                                        <input type="text" name="site_telefon" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="site_telefon" value="{{site_ayar.telefon}}" >
+                                    </div>
+                                    <div class="col-md-12 mb-25">
+                                        <label for="site_adres" class=" color-dark fs-14 fw-500 align-center">Adres </label>
+                                        <input type="text" name="site_adres" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="site_adres" value="{{site_ayar.adres}}" >
+                                    </div>
+                                     <div class="col-md-12 mb-25">
+                                        <label for="footer_text" class=" color-dark fs-14 fw-500 align-center">Footer Text </label>
+                                        <input type="text" name="footer_text" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="footer_text" value="{{site_ayar.footer_text}}" >
+                                    </div>
+                                    <div class="col-md-12 mb-25">
+                                        <label for="footer_text" class=" color-dark fs-14 fw-500 align-center">Whatsapp Linki </label>
+                                        <input type="text" name="whatsapp" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="footer_text" value="{{site_ayar.whatsapp}}" >
+                                    </div>
+                                    
+                                    <hr>
+                                    <div class="col-md-12 mb-25">
+                                        <label for="text_1_baslik" class=" color-dark fs-14 fw-500 align-center">Ana sayfa Text Başlık </label>
+                                        <input type="text" name="text_1_baslik" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="text_1_baslik" value="{{site_ayar.text_baslik}}" >
+                                    </div>
+                                    <div class="col-md-12 mb-25">
+                                        <label for="text_1" class=" color-dark fs-14 fw-500 align-center">Ana sayfa Text </label>
+                                        <textarea type="text" rows="10" name="text_1" class="form-control ih-medium ip-gray radius-xs b-light px-15"  id="text_1" placeholder="" >{{site_ayar.text}}</textarea>
+                                    </div>
+                                    <div class="col-md-12 mb-25">
+                                        <label for="ana_resim_" class="color-dark fs-14 fw-500 align-center">Ana sayfa resim</label>
+                                        <button type="button" class="btn btn-primary answer-image" id="ana_resim_" data-toggle="modal" data-target="#medyaModal2">Medya Ekle
+                                        </button>
+                                        <input type="hidden" name="ana_sayfa_resim" id="ana_sayfa_resim">
+                                        <div id="logo_div_ana" style="display : none;"><img src="{{site_ayar.anasayfa_resim}}" id="olan_resim_ana" ></div>
+                                    </div>
+                                    <hr>
+                                    <div class="col-md-12 mb-25">
+                                        <label for="hakkimizda_baslik" class=" color-dark fs-14 fw-500 align-center">Hakkımızda Text Başlık </label>
+                                        <input type="text" name="hakkimizda_baslik" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="hakkimizda_baslik" value="{{site_ayar.hakkimizda_baslik}}" >
+                                    </div>
+                                    <div class="col-md-12 mb-25">
+                                        <label for="hakkimizda_text" class=" color-dark fs-14 fw-500 align-center">Hakkımızda Text </label>
+                                        <textarea type="text" rows="10" name="hakkimizda_text" class="form-control ih-medium ip-gray radius-xs b-light px-15"  id="hakkimizda_text" placeholder="" >{{site_ayar.hakkimizda}}</textarea>
+                                    </div>
+                                    <div class="col-md-12 mb-25">
+                                        <label for="hakkimizda_resim_" class="color-dark fs-14 fw-500 align-center">Hakkımızda resim</label>
+                                        <button type="button" class="btn btn-primary answer-image" id="hakkimizda_resim_" data-toggle="modal" data-target="#medyaModal2">Medya Ekle
+                                        </button>
+                                        <input type="hidden" name="hakkimizda_resim_input" id="hakkimizda_resim_input">
+                                        <div id="logo_div_hak" style="display : none;"><img src="{{site_ayar.hakkimizda_resim}}" id="olan_resim_hak" ></div>
+                                     </div>
+                                    
+                                    
+                                </div>    
+                                
+                            </div>
+
+
+
+
+
+                            <div class="tab-pane fade" id="tab-v-2" role="tabpanel" aria-labelledby="tab-v-2-tab">
+                                <div class="row">
+                                    
+                                        {% csrf_token %}
+                                    <div class="col-md-6 mb-25">
+                                        <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#anaKategoriModal">Ana Kategori Ekle</button>
+                                    </div>
+                                    <div class="col-md-6 mb-25">
+                                         <button type="button"  class="btn btn-secondary mt-3 ml-2" data-toggle="modal" data-target="#altKategoriModal">Alt Kategori Ekle</button>
+                                    </div>
+                                    <div class="modal" tabindex="-1" id="anaKategoriModal" role="dialog"  aria-labelledby="anaKategoriModalLabel">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Ana Kategori Ekle</h5>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="text" id="anaKategoriInput" placeholder="Ana Kategori İsmi" name="ana_kategori" class="form-control">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-primary" id="anaKategoriEkle">Ekle</button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-25">
+                                    <table class="table table-bordered" id="kategoriTablosu">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ana Kategori</th>
+                                                    <th>Alt Kategori</th>
+                                                    <th>Sil</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="kategoriListesi">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="modal" tabindex="-1" id="altKategoriModal" role="dialog" aria-labelledby="altKategoriModalLabel">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Alt Kategori Ekle</h5>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <select id="anaKategoriSelect" class="form-control mb-2"></select>
+                                                    <input type="text" id="altKategoriInput" placeholder="Alt Kategori İsmi" name="alt_kategori" class="form-control">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn alt_ekle btn-primary" id="altKategoriEkle">Ekle</button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                 
+
+                                    
+                                </div>
+                            </div>
+                                
+                                
+
+
+
+
+
+
+
+                            <div class="tab-pane fade" id="tab-v-3" role="tabpanel" aria-labelledby="tab-v-3-tab">
+                                <div class="row">
+                                    
+                                    <div class="col-md-2 mb-25">
+                                        <label for="sol_slider"> Sol slider </label>   
+                                        <button type="button" class="btn btn-primary answer-image" id="sol_slider" data-toggle="modal" data-target="#medyaModal2">Medya Ekle
+                                        </button>
+                                    </div>  
+                                    <div class="col-md-10 mb-25">
+                                        <label for="resim_sol_baslik"> Başlık </label>   
+                                        <input type="text" id="resim_sol_baslik" value="{{site_ayar.sol_slider}}" name="resim_sol_baslik" class="form-control">
+                                    </div>  
+                                    <div class="col-md-12 mb-25">   
+                                        <table class="table table-bordered" id="sol-tablo">
+                                            <thead>
+                                                <tr>
+                                                    <th>Resim</th>
+                                                    <th>İşlemler</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="sol-body">
+                                               
+                                            </tbody>
+                                        </table>
+                                    </div> 
+                                    <div class="col-md-2 mb-25">
+                                        <label for="sag_slider"> Sağ slider </label>   
+                                        <button type="button" class="btn btn-primary answer-image" id="sag_slider" data-toggle="modal" data-target="#medyaModal2">Medya Ekle
+                                        </button>
+                                    </div>  
+                                    <div class="col-md-10 mb-25">
+                                        <label for="resim_sag_baslik"> Başlık </label>   
+                                        <input type="text" id="resim_sag_baslik" value="{{site_ayar.sag_slider}}" name="resim_sag_baslik" class="form-control">
+                                    </div>  
+                                    <div class="col-md-12 mb-25">   
+                                        <table class="table table-bordered" id="sag-tablo">
+                                            <thead>
+                                                <tr>
+                                                    <th>Resim</th>
+                                                    <th>İşlemler</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="sag-body">
+                                            
+                                            </tbody>
+                                        </table>
+                                    </div> 
+                                </div>     
+                            </div>
+
+
+
+
+
+                   
+                       
+
+                        </div>
+                    </form>
+                    </div>
+               
+                </div>
+            </div>
+      
+        </div>
+        
+</div>
+
+
+{%endblock content%}
+
+{%block js%}
+<script>
+let kategoriler = [];
+
+function slider_yenile(){
+    $('#sag-tablo tbody').empty();
+    $('#sol-tablo tbody').empty();
+    $.ajax({
+        url: '/panel/slider-ajax',  
+        method: 'GET',
+        dataType: 'json',  
+        success: function(data) {
+            $.each(data, function(index, item) {
+                var tip = item.fields.tip;
+                var resim = item.fields.resim;
+                var id = item.pk;
+
+                var tr = $('<tr></tr>');
+                var td1 = $('<td><img  style="width: 200px;height:200px;object-fit:contain;" src="' + resim + '" alt=""></td>');
+                var td2 = $('<td><button type="button"  data-id="' + id + '" class="btn btn-danger satir_sil btn-sm">Sil</button></td>');
+                console.log("ajax çalıştı");
+                tr.append(td1);
+                tr.append(td2);
+                console.log(item.fields.resim)
+           
+                if (tip == 'sol') {
+                    $('#sol-tablo tbody').append(tr);
+                } else if (tip == 'sag') {
+                    console.log("saga ekledi");
+                    $('#sag-tablo tbody').append(tr);
+                }
+            });
+        },
+        error: function(err) {
+          
+            console.error("Bir hata oluştu:", err);
+        }
+    });
+}
+
+function addDeleteButton(divSelector) {
+    const deleteBtn = $('<button>Sil</button>').addClass('btn btn-danger').on('click', function() {
+        $(divSelector).empty().hide();
+    });
+    $(divSelector).append(deleteBtn);
+}
+$(document).ready(function() {
+    slider_yenile();
+    veriyiYukle();
+
+    $(document).on('click', '.satir_sil', function() {
+        event.preventDefault();
+var id = $(this).data('id'); 
+var requestUrl = '/panel/slider-sil/' + id; 
+$.ajax({
+    url: requestUrl,
+    method: 'GET',
+    success: function(response) {
+        slider_yenile();
+        console.log("İstek başarılı!", response);
+    },
+    error: function(err) {
+
+        slider_yenile();
+        console.error("Bir hata oluştu:", err);
+    }
+});
+});
+    if ($('#olan_resim').attr('src') !== "") {
+        $('#logo_div').show();
+        addDeleteButton('#logo_div');
+    } else {
+        $('#logo_div').hide();
+    }
+    if ($('#olan_resim_hak').attr('src') !== "") {
+        $('#logo_div_hak').show();
+        addDeleteButton('#logo_div_hak');
+    } else {
+        $('#logo_div_hak').hide();
+    }
+    if ($('#olan_resim_ana').attr('src') !== "") {
+        $('#logo_div_ana').show();
+        addDeleteButton('#logo_div_ana');
+    } else {
+        $('#logo_div_ana').hide();
+    }
+    $('.ekle_butonu').on('click', function() {
+    if ($(this).hasClass('sol_ekle')) {
+    var csrfToken = getCookie('csrftoken');
+    
+    var resim_sol_url = selectedImage.attr('src');
+    var sol_resim_id = 0;
+    $.ajax({
+        url: '/panel/slider-ekle',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        data: {
+            tip: 'sol',
+            resim:resim_sol_url
+        },
+        success: function(response) {
+            slider_yenile();
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+        },
+        error: function(response) {
+            slider_yenile();
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+           
+        }
+    });
+        console.log("fonksiyon çalıştı");
+
+        let newRow = $('<tr></tr>');
+        let imgCell = $('<td></td>').append(selectedImage);
+        let deleteButton = $('<button>Sil</button>').addClass('btn btn-danger satir_sil').attr('data-id', sol_resim_id).on('click', function() {
+            $(this).closest('tr').remove();
+        });
+        let deleteCell = $('<td></td>').append(deleteButton);
+        newRow.append(imgCell, deleteCell);
+        $('#sol-tablo tbody').append(newRow);
+
+    } else if ($(this).hasClass('sag_ekle')) {
+    var csrfToken = getCookie('csrftoken');
+  
+    var resim_sag_url = selectedImage.attr('src');
+    var sag_resim_id = 0;
+    $.ajax({
+        url: '/panel/slider-ekle',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        data: {
+            tip: 'sag',
+            resim:resim_sag_url
+        },
+        success: function(response) {
+            slider_yenile();
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+        },
+        error: function(error) {
+            slider_yenile();
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+            veriyiYukle();
+          
+        }
+    });
+        console.log("fonksiyon çalıştı sag");
+
+        let newRow = $('<tr></tr>');
+        let imgCell = $('<td></td>').append(selectedImage);
+        let deleteButton = $('<button>Sil</button>').addClass('btn btn-danger satir_sil').attr('data-id', sag_resim_id).on('click', function() {
+            $(this).closest('tr').remove();
+        });
+        
+        let deleteCell = $('<td></td>').append(deleteButton);
+        newRow.append(imgCell, deleteCell);
+        $('#sag-tablo tbody').append(newRow);
+    }else if ($(this).hasClass('logo_ekle')){
+        $('#logo_div').show();
+        $('#logo_div').html(selectedImage); 
+        addDeleteButton('#logo_div');
+        $('#logo').val(selectedImage.attr('src'));
+    }else if($(this).hasClass('hakkimizda_resim')){
+        $('#logo_div_hak').show();
+        $('#logo_div_hak').html(selectedImage); 
+        addDeleteButton('#logo_div_hak');
+        $('#hakkimizda_resim_input').val(selectedImage.attr('src'));
+    }else if($(this).hasClass('ana_resim')){
+        $('#logo_div_ana').show();
+        $('#logo_div_ana').html(selectedImage); 
+        addDeleteButton('#logo_div_ana');
+        $('#ana_sayfa_resim').val(selectedImage.attr('src'));
+        
+    }
+
+    // Ortak kodlar
+    selectedImage = null;
+    $('.clickable-image').removeClass('selected');
+    $('.modal').modal('hide');
+    $('.modal-backdrop').remove();
+});
+
+$('#satir_sil').on('click', function() {
+   
+});
+
+$('#sol_slider').on('click', function() {
+    $('.ekle_butonu').addClass('sol_ekle');
+    $('.ekle_butonu').removeClass('sag_ekle');
+    $('.ekle_butonu').removeClass('logo_ekle');
+    $('.ekle_butonu').removeClass('ana_resim');
+    $('.ekle_butonu').removeClass('hakkimizda_resim');
+});
+
+$('#sag_slider').on('click', function() {
+    $('.ekle_butonu').addClass('sag_ekle');
+    $('.ekle_butonu').removeClass('sol_ekle');
+    $('.ekle_butonu').removeClass('logo_ekle');
+    $('.ekle_butonu').removeClass('ana_resim');
+    $('.ekle_butonu').removeClass('hakkimizda_resim');
+});
+$('#logo_goster').on('click', function() {
+    $('.ekle_butonu').addClass('logo_ekle');
+    $('.ekle_butonu').removeClass('sol_ekle');
+    $('.ekle_butonu').removeClass('sag_ekle');
+    $('.ekle_butonu').removeClass('ana_resim');
+    $('.ekle_butonu').removeClass('hakkimizda_resim');
+});
+
+$('#hakkimizda_resim_').on('click', function() {
+    $('.ekle_butonu').addClass('hakkimizda_resim');
+    $('.ekle_butonu').removeClass('sol_ekle');
+    $('.ekle_butonu').removeClass('sag_ekle');
+    $('.ekle_butonu').removeClass('ana_resim');
+    $('.ekle_butonu').removeClass('logo_ekle');
+});
+
+$('#ana_resim_').on('click', function() {
+    $('.ekle_butonu').addClass('ana_resim');
+    $('.ekle_butonu').removeClass('sol_ekle');
+    $('.ekle_butonu').removeClass('sag_ekle');
+    $('.ekle_butonu').removeClass('logo_ekle');
+    $('.ekle_butonu').removeClass('hakkimizda_resim');
+});
+
+    $('#anaKategoriEkle').click(function() {
+        var csrfToken = getCookie('csrftoken');
+    var anaKategoriValue = $('#anaKategoriInput').val();
+    
+    $.ajax({
+        url: '/panel/kategori-ekle/',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        data: {
+            name: anaKategoriValue,
+            tip: 'ust'
+        },
+        success: function(response) {
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+            veriyiYukle();
+        },
+        error: function(error) {
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+            veriyiYukle();
+           console.log(error);
+        }
+    });
+});
+
+$('#altKategoriEkle').click(function() {
+    var csrfToken = getCookie('csrftoken');
+    var anaKategoriSelectValue = $('#anaKategoriSelect').val();
+    var altKategoriValue = $('#altKategoriInput').val();
+    console.log("id : ",anaKategoriSelectValue)
+    console.log("id : ",altKategoriValue)
+    $.ajax({
+        url: '/panel/kategori-ekle/',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        data: {
+            id: anaKategoriSelectValue,
+            name: altKategoriValue,
+            tip: 'alt'
+        },
+        success: function(response) {
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+            veriyiYukle();
+        },
+        error: function(error) {
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+            veriyiYukle();
+            console.log(error);
+        }
+    });
+});
+});
+
+function kategoriSil(id,tip){
+    var csrfToken = getCookie('csrftoken');
+        const url = `/panel/kategori-sil/${id}/${tip}`;
+        console.log("silindi");
+        $.get(url, function(response) {
+   
+            veriyiYukle();
+        });
+}
+function veriyiYukle() {
+    console.log("data: çalıştı");
+    $.get("/panel/kategoriler_ajax", function(data) {
+        let ustKategoriler = JSON.parse(data.ust);
+        let altKategoriler = JSON.parse(data.alt);
+        
+        kategoriler = ustKategoriler.map(ust => {
+            return {
+                id: ust.pk,
+                tip: 'ust',
+                ana: ust.fields.name,
+                alt: altKategoriler
+                    .filter(alt => alt.fields.upper_category === ust.pk)
+                    .map(alt => ({
+                        id: alt.pk,
+                        tip: 'alt',
+                        name: alt.fields.name
+                    }))
+            };
+        });
+        
+        kategorileriGuncelle();
+    });
+}
+
+function kategorileriGuncelle() {
+    $('#kategoriListesi').empty();
+    $('#anaKategoriSelect').empty();
+
+    kategoriler.forEach((kategori, anaIndex) => {
+        if (kategori.alt.length === 0) {
+            let row = $('<tr></tr>');
+            row.append('<td>' + kategori.ana + '</td>');
+            row.append('<td>-</td>');
+            let deleteMainButton = $('<button type="button" class="btn btn-danger btn-sm">Sil</button>')
+                .attr('data-id', kategori.id)
+                .attr('data-tip', kategori.tip)
+                .click(function() {
+                    let id = $(this).attr('data-id');
+                    let tip = $(this).attr('data-tip');
+                    kategoriSil(id,tip);
+                        kategoriler.splice(anaIndex, 1);
+
+                       
+                kategorileriGuncelle();
+                veriyiYukle();
+                        
+               
+                  
+                });
+                let duzenleAnaKategoriUrl = '/site-ust-kategori-duzenle/' + kategori.id; 
+
+
+                let duzenleAnaKategoriLink = $('<a href="' + duzenleAnaKategoriUrl + '" target="_blank" class="btn btn-primary">Düzenle</a>');
+
+                row.append($('<td></td>').append(deleteMainButton));
+                
+            /*let duzenleAnaKategoriUrl = '/site-ust-kategori-duzenle/' + kategori.id; 
+            let duzenleAnaKategoriLink = $('<a href="' + duzenleAnaKategoriUrl + '" target="_blank"></a>'); 
+            let duzenleAnaKategoriButton = $('<button type="button" class="btn btn-info btn-sm">Düzenle</button>');
+            duzenleAnaKategoriLink.append(duzenleAnaKategoriButton);
+            row.append($('<td></td>').append(duzenleAnaKategoriLink));*/
+            $('#kategoriListesi').append(row);
+        } else {
+            let mainRow = $('<tr></tr>');
+            mainRow.append('<td>' + kategori.ana + '</td>');
+            mainRow.append('<td>-</td>');
+            let deleteAllButton = $('<button type="button" class="btn btn-danger btn-sm">Sil</button>')
+                .attr('data-id', kategori.id)
+                .attr('data-tip', kategori.tip)
+                .click(function() {
+                    let id = $(this).attr('data-id');
+                    let tip = $(this).attr('data-tip');
+                    kategoriSil(id,tip);
+                    
+                        kategoriler.splice(anaIndex, 1);
+                kategorileriGuncelle();
+                veriyiYukle();
+                  
+                });
+            mainRow.append($('<td></td>').append(deleteAllButton));
+            $('#kategoriListesi').append(mainRow);
+
+            kategori.alt.forEach((alt, altIndex) => {
+                let row = $('<tr></tr>');
+                row.append('<td>' + kategori.ana + '</td>');
+                row.append('<td>' + alt.name + '</td>');
+                let deleteSubButton = $('<button type="button" class="btn btn-danger kategori_sil btn-sm">Sil</button>')
+                
+                    .attr('data-id', alt.id)
+                    .attr('data-tip', alt.tip)
+                    .click(function() {
+                        let id = $(this).attr('data-id');
+                    let tip = $(this).attr('data-tip');
+                    kategoriSil(id,tip);
+                        
+                            kategori.alt.splice(altIndex, 1);
+                    kategorileriGuncelle();
+                    veriyiYukle();
+                      
+                    });
+                row.append($('<td></td>').append(deleteSubButton));
+
+                let duzenleUrl = '/panel/site-kategori-duzenle/' + alt.id; 
+                let duzenleLink = $('<a href="' + duzenleUrl + '" target="_blank"></a>');
+                let duzenleButton = $('<button type="button" class="btn btn-info btn-sm">Düzenle</button>');
+                
+
+
+                $('#kategoriListesi').append(row);
+            });
+        }
+
+        $('#anaKategoriSelect').append('<option value="' + kategori.id + '">' + kategori.ana + '</option>');
+    });
+}
+function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+}
+</script>
+{%endblock js%}

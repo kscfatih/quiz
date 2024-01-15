@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<button type="button" class="btn btn-primary" id="openModalButton">
+    Open Modal
+</button>
+
+<div class="modal fade" id="myModal">
+    {% csrf_token %}
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Image Upload</h4>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Dinamik içerik burada olacak -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+
+var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+$("#openModalButton").click(function() {
+    fetchImages();
+    $('#myModal').modal('show');
+});
+
+$('#modalBody').on('click', '.delete-button', function() {
+    var imageId = $(this).data('id');
+    $.ajax({
+        url: '/panel/delete_image/' + imageId + '/',
+        type: 'GET',
+        success: function(data) {
+            if (data.success) {
+                fetchImages();  // Eğer silme başarılıysa resim listesini güncelle
+            }
+        },
+        error: function(error) {
+            console.log("Delete Error:", error);  // Hata durumunda konsola yazdır
+        }
+    });
+});
+function fetchImages() {
+    $.ajax({
+        url: '/panel/fetch_images/',
+        type: 'GET',
+        success: function(data) {
+            $('#modalBody').html(data.html);
+            bindUploadForm();
+        }
+    });
+}
+
+function bindUploadForm() {
+    $('#upload-form').submit(function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        $.ajax({
+            url: '/panel/upload_image/',
+            type: 'POST',
+            headers: {"X-CSRFToken": csrftoken}, // CSRF token'ını burada ekliyoruz
+            data: formData,
+            success: function (data) {
+                fetchImages();
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+{%extends 'yonetim/base/index.html' %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert-big alert alert-success" role="alert">
+            <div class="alert-content">
+                <h6 class="alert-heading">Success</h6>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+<form method="POST" >
+    {% csrf_token %}
+    <div class="container">
+    <div class="row">
+        <div class="col-md-6">
+    <label for="username">İsim:</label>
+    <input type="text" id="first_name" class="form-control form-group" name="first_name" value="{{ user.first_name }}" required>
+    </div>
+    <div class="col-md-6">
+    <label for="username">Soyisim:</label>
+    <input type="text" id="last_name"  class="form-control form-group" name="last_name" value="{{ user.last_name }}" required>
+    </div>
+    <div class="col-md-6">
+    <label for="username">Kullanıcı Adı:</label>
+    <input type="text" id="username"  class="form-control form-group" name="username" value="{{ user.username }}" required>
+    </div>
+    <div class="col-md-6">
+    <label for="email">E-Posta:</label>
+    <input type="email" id="email"  class="form-control form-group" name="email" value="{{ user.email }}" required>
+    </div>
+    </div>
+    <button type="button" class="btn btn-primary" id="sifre-degis" >Şifreyi değiştir</button>
+
+    <!-- Eğer şifre değiştirmek isterseniz, şifre alanlarını ekleyebilirsiniz. -->
+    <div class="sifre-degistir" style="display: none;">
+
+    <div class="row">
+        <div class="col-md-12">
+    <label for="old_password">Eski Şifre:</label>
+    <input type="password" class="form-control form-group" id="old_password" name="old_password">
+    </div>
+    <div class="col-md-6">
+    <label for="new_password1">Yeni Şifre:</label>
+    <input type="password" class="form-control form-group" id="new_password1" name="new_password1">
+    </div>
+    <div class="col-md-6">
+
+    <label for="new_password2">Yeni Şifre (Tekrar):</label>
+    <input type="password" class="form-control form-group" id="new_password2" name="new_password2">
+    </div></div></div>
+   
+    <button type="submit" class="form-control btn btn-primary mt-5" value="Bilgileri Güncelle">Kaydet</button>
+</div>
+</form>
+{% endblock content %}
+
+{%block js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#sifre-degis").click(function(){
+            $(".sifre-degistir").toggle(); 
+        });
+    });
+</script>
+{%endblock js%}

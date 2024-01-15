@@ -1,0 +1,625 @@
+{%extends 'frontend/base/index.html'%}
+{% load custom_filters  %}
+{%block css%}
+<style>
+    .h3a {
+    text-align: center;
+    color: #26bae0;
+    margin: 0;
+     padding: 5px;
+    font-weight: bold;
+    }
+    
+@media (max-width: 768px) {
+    .engelle {
+        display: none;
+    }
+}
+    .test-header {
+    display: flex;
+    
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    height: 30vh;
+    }
+    .yazi-alan_ {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%; 
+}
+
+.cws_button {
+    background-color:#26b4d7;
+}
+
+.yazi-alan {
+    text-align: center; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+
+
+    .test-headera {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    height: 50vh;
+    }
+    .test-headera h3,  
+.test-header p { 
+    font-size: 20px; 
+}
+.centered-link {
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 100%;
+}
+.grid_row_ {
+    border: 4px solid #26b4d7; 
+    border-radius: 15px;
+    padding: 10px;
+}
+
+
+
+
+</style>
+{%endblock css%}
+{%block title%} <title> {{ alt_kategori.name }} Quiz</title>{%endblock title%}
+
+{%block menu%} {%include 'frontend/base/inc/menu.html'%} {%endblock menu%}
+
+{%block head%}
+<section class='page_title wave'>
+    <div class='container'>
+        <div class='title'>
+            <h1>{{ alt_kategori.name }} Sınavlar</h1></div>
+        <nav class="bread-crumbs"><a href="index-2.html" >Ana sayfa</a><i class="delimiter fa fa-chevron-right"></i><span class="current">{{ alt_kategori.name }}</span></nav>
+        <!-- .breadcrumbs -->
+    </div>
+    <canvas class='breadcrumbs' data-bg-color='#f8f2dc' data-line-color='#f9e8b2'></canvas>
+</section>
+
+{%endblock head%}
+
+{%block main%}  
+
+<input type="hidden" id="slug" value="{{slug}}">
+<div id="main" class="site-main">
+    <div class="page_content">
+        <!-- pattern container / -->
+        <div class='left-pattern pattern pattern-2'></div>
+        <main>
+
+           
+            {% now "Y-m-d H:i:s" as current_time_string %}
+            {% for test in tests %}
+           
+            {% if test.id == alt_kategori.one_cikan_test_id  and  test.published == '1' %}
+     
+            <div class="test-header" style="margin-top:50px;">
+            <h3 class="ce_title h3a">{{ test.title }}</h3>
+            
+            {% with current_time=current_time_string|to_datetime active_time=test.options.activeInterval|string_to_datetime deactive_time=test.options.deactiveInterval|string_to_datetime %}
+            
+            {% if current_time < active_time %}
+                <h3 class="h3a">{{ test.options.active_date_pre_start_message|safe }}</h3>
+                <h3 class=" h3a">Bu sınav henüz başlamadı ! Başlangıç tarihi : {{ test.options.activeInterval|custom_date_format }}</h3>
+            {% elif active_time <= current_time and current_time < deactive_time %}
+                <h3 class=" h3a">Bu sınavın bitiş tarihi {{ test.options.deactiveInterval|custom_date_format }}'dir.</h3>
+            {% else %}
+                <h3 class=" h3a" style="color: red;">{{ test.options.quiz_tackers_message|safe }}</h3>
+            {% endif %}
+            {% endwith %}
+            </div>
+            <div class='grid_row clearfix' style='padding-top: 50px;'>
+                <div class='grid_col grid_col_4 engelle'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                            crossorigin="anonymous"></script>
+                       <!-- testler ust sol -->
+                       <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-client="ca-pub-4930971127953627"
+                            data-ad-slot="3693976699"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"></ins>
+                       <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                       </script>
+                        </div>
+                    </div>
+                  
+                </div>
+                
+                <div class='grid_col grid_col_4 yazi-alan_'>
+                    <div class='ce clearfix yazi-alan'>
+                        <div>
+                            <p><img class="aligncenter  size-full image-type noborder" src="{{ test.quiz_image }}" style="cursor: pointer;" alt="responsive_retina" width="450" height="450" /></p>
+                           {{ test.description|safe }}
+                          
+                            {% with current_time=current_time_string|to_datetime active_time=test.options.activeInterval|string_to_datetime deactive_time=test.options.deactiveInterval|string_to_datetime %}
+                          
+                            {% if current_time < active_time %}
+                          
+                              {% elif active_time <= current_time and current_time < deactive_time %}
+                            <a  href="/panel/{{test.tema}}/{{ test.id }}" target="_blank"  class="basla cws_button alt xlarge"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Sınava Başla</span></a>
+                            {% else %}   
+                            <a  href="/test-sonuc/{{ test.id }}"  target="_blank" class=" cws_button alt xlarge"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Sınav Sonuçlarını Gör</span></a>
+                      
+                            {% endif %}{% endwith %}
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+               
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                            crossorigin="anonymous"></script>
+                       <!-- testler ust sag -->
+                       <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-client="ca-pub-4930971127953627"
+                            data-ad-slot="8754731680"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"></ins>
+                       <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                       </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+           
+            {% endfor %}
+        <!--   {%if active_tests%}
+           
+            <h3 class="ce_title h3a">Devam Eden Testler</h3>
+            
+            
+         
+            {% for test in active_tests %}
+           
+         
+            
+            <div class='grid_row clearfix grid_row_' style='padding-top: 50px;padding-bottom: 50px;'>
+               
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <div class="test-headera">
+                                <h3 class="ce_title h3a">{{ test.title }}  </h3>
+                        
+                            {% with current_time=current_time_string|to_datetime active_time=test.options.activeInterval|string_to_datetime deactive_time=test.options.deactiveInterval|string_to_datetime %}
+                        
+                            {% if current_time < active_time %}
+                                <h3 class="h3a">{{ test.options.active_date_pre_start_message }}</h3>
+                                <h3 class=" h3a">Bu sınav henüz başlamadı ! Başlangıç tarihi : {{ test.options.activeInterval|custom_date_format }}</h3>
+                            {% elif active_time <= current_time and current_time < deactive_time %}
+                                <h3 class=" h3a"><span style="color: #26b4d7">Devam Ediyor !</span><br>Bu sınavın bitiş tarihi {{ test.options.deactiveInterval|custom_date_format }}'dir.</h3>
+                            {% else %}
+                                <h3 class=" h3a" style="color: red;">{{ test.options.quiz_tackers_message|safe }}</h3>
+                            {% endif %}
+                            {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>       
+                            <p><img class="aligncenter   size-full image-type noborder" src="{{ test.quiz_image }}" style="cursor: pointer;" alt="responsive_retina" width="450" height="450" /></p>
+                           
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>
+                            {{ test.description|safe }}
+                            {% with current_time=current_time_string|to_datetime active_time=test.options.activeInterval|string_to_datetime deactive_time=test.options.deactiveInterval|string_to_datetime %}
+                            {% if current_time < active_time %}
+                              {% elif active_time <= current_time and current_time < deactive_time %}
+                            <a  href="/panel/quiz1/{{ test.id }}" target="_blank" class="basla cws_button alt xlarge"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Sınava Başla</span></a>
+                            {% else %} <a  href="/test-sonuc/{{ test.id }}" target="_blank" class=" cws_button alt xlarge"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Sınav Sonuçlarını Gör</span></a>
+                            {% endif %}{% endwith %}
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+         
+           
+            
+    
+            
+           
+            {% endfor %}
+            <div class="pagination">
+                {% if active_tests.has_previous %}
+              
+                <a href="?page_active={{ active_tests.previous_page_number }}&scrollTo=2000" class="cws_button alt xlarge"><span style="color: white;" class="cws_button_inner">Geri</span></a>
+                {% endif %}
+                Sayfa {{ active_tests.number }} / {{ active_tests.paginator.num_pages }}
+                {% if active_tests.has_next %}
+                    <a href="?page_active={{ active_tests.next_page_number }}&scrollTo=2000" class=" cws_button alt xlarge"><span style="color: white;" class="cws_button_inner" >İleri</span></a>
+                {% endif %}
+            </div>
+    
+
+            {%endif%}
+            <h3 class="ce_title h3a">Süresi Dolmuş Testler</h3>
+      
+            
+
+            {% for test in inactive_tests  %}
+      
+            
+            <div class='grid_row clearfix grid_row_ inactive_tests_row' style='padding-top: 50px;padding-bottom: 50px;'>
+               
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <div class="test-headera">
+                                <h3 class="ce_title h3a">{{ test.title }}  </h3>
+                        
+                            {% with current_time=current_time_string|to_datetime active_time=test.options.activeInterval|string_to_datetime deactive_time=test.options.deactiveInterval|string_to_datetime %}
+                        
+                            {% if current_time < active_time %}
+                                <h3 class="h3a">{{ test.options.active_date_pre_start_message|safe }}</h3>
+                                <h3 class=" h3a">Bu sınav henüz başlamadı ! Başlangıç tarihi : {{ test.options.activeInterval|custom_date_format }}</h3>
+                            {% elif active_time <= current_time and current_time < deactive_time %}
+                                <h3 class=" h3a"><span style="color: #26b4d7">Devam Ediyor !</span><br>Bu sınavın bitiş tarihi {{ test.options.deactiveInterval|custom_date_format }}'dir.</h3>
+                            {% else %}
+                                <h3 class=" h3a" style="color: red;">{{ test.options.quiz_tackers_message|safe }}</h3>
+                            {% endif %}
+                            {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>       
+                            <p><img class="aligncenter  size-full image-type noborder" src="{{ test.quiz_image }}" style="cursor: pointer;" alt="responsive_retina" width="450" height="450" /></p>
+                           
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>
+                            {{ test.description|safe }}
+                            {% with current_time=current_time_string|to_datetime active_time=test.options.activeInterval|string_to_datetime deactive_time=test.options.deactiveInterval|string_to_datetime %}
+                            {% if current_time < active_time %}
+                              {% elif active_time <= current_time and current_time < deactive_time %}
+                            <a  href="/panel/quiz1/{{ test.id }}" target="_blank" class="basla cws_button alt xlarge"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Sınava Başla</span></a>
+                            {% else %} <a  href="/test-sonuc/{{ test.id }}" target="_blank" class=" cws_button alt xlarge"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Sınav Sonuçlarını Gör</span></a>
+                            {% endif %}{% endwith %}
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+         
+           
+            
+    
+            
+          
+            {% endfor %}
+           
+            <div class="pagination">
+                {% if inactive_tests.has_previous %}
+                    <a href="?page_inactive={{ inactive_tests.previous_page_number }}&scrollTo=2000 "  class=" cws_button alt xlarge"><span style="color: white;" class="cws_button_inner" >Geri</span></a>
+                {% endif %}
+                Sayfa {{ inactive_tests.number }} / {{ inactive_tests.paginator.num_pages }}
+                {% if inactive_tests.has_next %}
+                <a href="?page_inactive={{ inactive_tests.next_page_number }}" class="cws_button alt xlarge" id="myButton">
+                    <span style="color: white;" class="cws_button_inner">İleri</span>
+                  </a>        {% endif %}
+            </div>
+           -->
+           <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+<div id="active_tests_section" >
+  
+</div>
+
+<div id="pending_tests_section">
+
+ </div>
+
+ <div id="inactive_tests_section" >
+
+</div>
+
+
+
+        </main>
+        <div class='right-pattern pattern pattern-2'></div>
+        <div class="footer_image"></div>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" style='display:none;'>
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+</div>
+
+
+{%endblock main%}
+
+{%block js%}
+
+<script>
+var path = window.location.pathname;
+    var parts = path.split("/").filter(Boolean); // Filtreleme boş stringleri çıkarmak için
+    var slug = parts[parts.length - 1];
+    
+function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+}
+
+function getTests(pageNumber, tip, slug) {
+    var csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (!csrfTokenElement) {
+        console.error("CSRF token bulunamadı.");
+        return;
+    }
+    var csrfToken = csrfTokenElement.value;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/ajaxx/' + slug, true); 
+
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); 
+    xhr.setRequestHeader("X-CSRFToken", csrfToken);
+
+    xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 400) {
+            console.log("ajax başarılı");
+            var data = JSON.parse(xhr.responseText);
+            console.log(data, tip);
+            renderTests(data, tip);   
+        } else {
+            console.error('Veri alınamadı!', xhr);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error('Bağlantı hatası!');
+    };
+
+    console.log(pageNumber, tip);
+    
+    var postData = "page=" + pageNumber + "&tip=" + tip;
+    xhr.send(postData);
+}
+
+    function customDateFormat(date) {
+        return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
+    }
+
+    function renderTests(data, tip) {
+        
+        var tip_kontrol = tip;
+       
+      
+        var current_time = new Date();
+        console.log("burası :",tip)
+        if (tip === "all") {
+        ['active', 'inactive', 'pending'].forEach(function(currentTip) {
+            console.log("burası :",currentTip)
+            processTests(data[currentTip], currentTip);
+        });
+    } else {
+        processTests(data, tip);
+    }
+    var section;
+    function processTests(testsData, currentTip) {
+        if(tip_kontrol ==="all"){
+          
+        var tests = testsData.tests; 
+        console.log(tests)
+    }else{
+        tests=data[currentTip];
+        console.log("aaa:0",tests)
+    }
+
+        section = document.querySelector('#' + currentTip + '_tests_section');
+        var testRows = section.querySelectorAll('.test_row');
+        if(currentTip === 'active'){
+            baslik = "<h3 class='ce_title h3a'>Devam Eden Quizler</h3>";
+        }else if(currentTip === 'inactive'){
+            baslik = "<h3 class='ce_title h3a'>Süresi Dolmuş Quizler</h3>=";
+        }else if(currentTip == 'pending'){
+            baslik = "<h3 class='ce_title h3a'>Henüz Başlamamış Quizler</h3>=";
+        }
+ 
+        if (testRows.length > 0) {
+            testRows.forEach(function(row) {
+                row.remove();
+            });
+        }
+        tests.forEach(function(test) {
+            console.log(test)
+            var active_time = new Date(test.options.activeInterval);
+            var deactive_time = new Date(test.options.deactiveInterval);
+
+            var time_message = "";
+            var action_button = "";
+
+            if (current_time < active_time) {
+                time_message = test.options.active_date_pre_start_message;
+                time_message += "<br>Bu sınav henüz başlamadı ! Başlangıç tarihi : " + customDateFormat(active_time);
+            } else if (active_time <= current_time && current_time < deactive_time) {
+                time_message = "<span style='color: #26b4d7'>Devam Ediyor !</span><br>  Bu sınavın bitiş tarihi " + customDateFormat(deactive_time) + "'dir.";
+                action_button = `<a href="/panel/${test.tema}/${test.id}" target="_blank" class="basla cws_button alt xlarge"><span class="cws_button_inner">Sınava Başla</span></a>`;
+            } else {
+                time_message = `<h3 class=" h3a" style="color: red;">${test.options.quiz_tackers_message}</h3>`;
+                action_button = `<a href="/test-sonuc/${test.id}" target="_blank" class=" cws_button alt xlarge"><span class="cws_button_inner">Sınav Sonuçlarını Gör</span></a>`;
+            }
+
+            var html = `
+          <div class='test_row'>
+            ${baslik}
+            <div class='grid_row grid_row_ clearfix ' style='padding-top: 50px;padding-bottom: 50px;'>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div class="test-headera">
+                            <h3 class="ce_title h3a">${test.title}</h3>
+                            ${time_message}
+                        </div>
+                    </div>
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <p><img class="aligncenter  size-full image-type noborder" src="${test.quiz_image}" style="cursor: pointer;" alt="responsive_retina" width="450" height="450" /></p>
+                    </div>
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>
+                            ${test.description}
+                            ${action_button}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pagination">
+        <div style="display: flex; justify-content: center; margin-top: 20px;">
+            <button class="previous-page cws_button alt xlarge" data-tip="${currentTip}" data-page="1" style="margin-right: 10px;" onclick="navigatePage(this)"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Geri</span></button>
+            <button class="next-page cws_button alt xlarge" data-tip="${currentTip}" data-page="2" onclick="navigatePage(this)"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">İleri</span></button>
+        </div>
+    </div>
+    <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+</div>
+            `;
+
+            section.insertAdjacentHTML('afterbegin', html);
+
+            var prevButton = section.querySelector('.previous-page');
+    var nextButton = section.querySelector('.next-page');
+    prevButton.style.display = 'block';
+    nextButton.style.display= 'block';
+    if (testsData.has_previous) {
+        prevButton.dataset.page = testsData.previous_page_number;
+        prevButton.removeAttribute('disabled');
+    } else {
+        prevButton.setAttribute('disabled', 'disabled');
+    }
+    if (testsData.has_next) {
+        nextButton.dataset.page = testsData.next_page_number;
+        nextButton.removeAttribute('disabled');
+    } else {
+        nextButton.setAttribute('disabled', 'disabled');
+    }
+        });
+    }
+        
+
+        
+    }
+
+    function navigatePage(button) {
+        var tip = button.dataset.tip;
+        var pageNumber = parseInt(button.dataset.page);
+        console.log(tip,pageNumber,slug)
+        getTests(pageNumber, tip, slug);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+console.log(slug)
+getTests(1, 'all', slug);
+
+});
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    var prevButton = document.querySelector('.previous-page');
+    var nextButton = document.querySelector('.next-page');
+
+    prevButton.style.display = 'none';
+    nextButton.style.display= 'none';
+    var path = window.location.pathname;
+    var parts = path.split("/").filter(Boolean); // Filtreleme boş stringleri çıkarmak için
+    var slug = parts[parts.length - 1];
+    getTests(1, 'all', slug);
+
+
+
+
+
+
+        window.addEventListener("DOMContentLoaded", function() {
+  if (window.location.search.includes("page_inactive")) {
+ 
+    const buttonElement = document.getElementById("myButton");
+    if (buttonElement) {
+      buttonElement.scrollIntoView({ behavior: "smooth" });
+    }
+  }
+});
+
+    var image = document.querySelector(".aligncenter.size-full.image-type.noborder");
+
+    // Resme tıklama olayı ekle
+    image.addEventListener("click", function() {
+        // a etiketini seç
+        var link = document.querySelector("a.basla.cws_button.small");
+        // a etiketinin href özelliğini al ve yeni bir sekmede aç
+        window.open(link.getAttribute("href"), '_blank');
+    });
+    window.onload = function() {
+        // URL'de belirli bir parametrenin olup olmadığını kontrol edin
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('scrollTo')) {
+            var scrollToPosition = urlParams.get('scrollTo');
+            window.scrollTo(0, scrollToPosition);
+        }
+    }
+});
+</script>
+
+{%endblock js%}

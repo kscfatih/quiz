@@ -1,0 +1,315 @@
+{%extends 'yonetim/base/index.html'%}
+{%block css%}
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+
+    padding: 8px 10px;
+    text-align: left;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    max-width: 200px; 
+}
+.tdlist {
+    display: flex;
+    justify-content: center;  
+    align-items: center;      
+    height: 100%;  
+}
+</style>
+{%endblock css%}
+{%block content%}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert-big alert alert-success" role="alert">
+            <div class="alert-content">
+                <h6 class="alert-heading">Success</h6>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="row">
+    <div class="col-lg-12">
+
+        <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">sorular</h4>
+            
+        </div>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+
+        <div class="card">
+         
+            <div class="card-body p-0">
+                
+                <div class="table4  p-25 bg-white mb-30">
+                    <div class="row">
+                        <!-- İlk kolon -->
+                        <div class="col-md-2">
+                            <a href="/panel/create-question">
+                                <button class="btn btn-primary mb-4 ">+ Soru ekle</button>
+                            </a>
+                        </div>
+                    
+                        <div class="col-md-5">
+                            <select id="filterByCategory" class="form-control d-inline-block w-auto mr-3">
+                                <option value="">Kategori filtrele</option>
+                                {% for i in kategoriler %}
+                                <option value="{{i.id}}">{{i.title}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <input  id="search-input" class="form-control" type="text"  placeholder="Sorularda ara...">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0" id="myTable">
+                            <thead>
+                                <tr class="userDatatable-header">
+                                    <th>
+                                        <span >ID</span>
+                                    </th>
+                                    <th>
+                                        <span >Soru</span>
+                                    </th>
+                                    
+                                    <th>
+                                        <span >Kategori</span>
+                                    </th>
+                                    <th>
+                                        <span >Cevap Sayısı</span>
+                                    </th>
+                                    <th>
+                                        <span >Tarih</span>
+                                    </th>
+                                    <th>
+                                        <span >Düzenle</span>
+                                    </th>
+                                    <th>
+                                        <span >Sil</span>
+                                    </th>
+                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%for i in sorular%}
+                                <tr>
+                                    <td>
+                                        <div class="row">
+                                     
+                                            
+                                     
+                                       
+                                            
+                                    
+                                    </div>
+                                      
+                                    </td>
+                                    <td>
+                                       
+                                        {{ i.question|striptags }}
+                                        
+                                    </td>
+                                   
+                                <td>
+                                    {{i.category.title}}
+                           
+                                
+                            </td>
+                                    <td>
+                                        
+                                        {% load my_filters %}
+                                        {{ question_count|get_item:i.id }}
+                                    </td>
+                                    <td>
+                                      
+                                        {{i.id}}
+                                       
+                                    </td>
+                                    
+                                    <td>
+                                        {{ i.create_date }}
+                                    
+                                    </td>
+                                </tr>
+                                {%endfor%}
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-end mt-30">
+                            <nav class="atbd-page ">
+                                <ul class="atbd-pagination d-flex">
+                                    <button id="prev-btn" class="btn btn-default btn-squared btn-outline-primary " disabled>Geri</button>
+                                    <button id="next-btn" class="btn btn-default btn-squared btn-outline-primary " disabled>İleri</button>
+                                   
+                                </ul>
+                            </nav>
+                         
+   
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{%endblock content%}
+
+
+{%block js%}
+<script>
+    $(document).ready(function() {
+    function fetchResults(page = 1) {
+    var query = $("#search-input").val();
+    var selectedCategory = $('#filterByCategory').val();
+    $.ajax({
+        url: '{% url "panel:ajax_search" %}',
+        data: {
+            'q': query,
+            'page': page,
+            'category_id': selectedCategory
+        },
+        dataType: 'json',
+        success: function(data) {
+            $("#myTable tbody").empty();
+            $.each(data.results, function(index, item) {
+                $("#myTable tbody").append('<tr><td> '+ item.id +'</td> <td>'
+                    + item.question +'</td><td>'+ item.kategori +'</td><td>' 
+                    +item.cevap+ '</td><td>' + item.tarih + '</td><td style=" justify-content: center;" > <button class="btn btn-info mr-3 edit-button" data-id="'+ item.id +'">Düzenle</button></td> <td style=" justify-content: center; "> <button class="btn btn-danger delete-button"  data-id="'+ item.id +'">sil</button></td></tr>'
+                    
+                );
+            });
+            
+            if (data.has_next) {
+                $("#next-btn").prop('disabled', false);
+                $("#next-btn").data('page', data.next_page_number);
+            } else {
+                $("#next-btn").prop('disabled', true);
+            }
+            
+            if (data.has_previous) {
+                $("#prev-btn").prop('disabled', false);
+                $("#prev-btn").data('page', data.previous_page_number);
+            } else {
+                $("#prev-btn").prop('disabled', true);
+            }
+            bindButtonListeners();
+        }
+    });
+}
+
+$("#search-input").on("keyup", function() {
+    currentPage = 1;  // Arama kutucuğuna her yeni karakter girildiğinde sayfa numarasını sıfırla
+    fetchResults();
+});
+
+$("#next-btn").click(function() {
+    event.preventDefault();
+    currentPage = $(this).data('page');
+    fetchResults(currentPage);
+});
+$("#filterByCategory").on("change", function() {
+    currentPage = 1;  // Kategori seçildiğinde sayfa numarasını sıfırla
+    fetchResults();
+});
+$("#prev-btn").click(function() {
+    event.preventDefault();
+    currentPage = $(this).data('page');
+    fetchResults(currentPage);
+});
+
+fetchResults(); 
+
+});
+$(document).ready(function(){
+    // Select box değişikliğinde çalışacak fonksiyon
+  
+    
+    // Arama kutusunda bir değişiklik olduğunda çalışacak fonksiyon
+    $('#searchInput').on('keyup', function(){
+        let searchValue = $(this).val().toLowerCase();
+        
+        $('#myTable tbody tr').each(function(){
+            let rowText = $(this).text().toLowerCase();
+            
+            if(rowText.includes(searchValue)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+});
+    function changeItemsPerPage(selectElement) {
+    const selectedValue = selectElement.value;
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set('items_per_page', selectedValue);
+    window.location.href = newUrl.toString();
+}
+function bindButtonListeners() {
+    // Düzenle butonlarına event listener ekleyin
+    document.querySelectorAll('.edit-button').forEach(function(button) {
+    button.addEventListener('click', function(event) {
+        var id = event.target.getAttribute('data-id');
+        var newTab = window.open("/panel/edit-question/" + id, '_blank');
+        newTab.focus(); // Yeni sekme üzerine odaklan
+    });
+});
+
+    // Sil butonlarına event listener ekleyin
+    document.querySelectorAll('.delete-button').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            var id = event.target.getAttribute('data-id');
+            window.location.href = "/panel/delete-question/" + id;
+        });
+    });
+}
+
+// Sayfa yüklendiğinde bir kere çalıştır
+document.addEventListener("DOMContentLoaded", bindButtonListeners);
+document.addEventListener("DOMContentLoaded", function() {
+function filterTable() {
+    // Arama kelimesini al
+    var searchQuery = document.getElementById("searchInput").value.toLowerCase();
+
+    // Tabloyu al ve satırları gez
+    var table = document.querySelector(".table");
+    var rows = table.querySelectorAll("tbody tr");
+
+    rows.forEach(function(row) {
+        var cells = Array.from(row.querySelectorAll("td"));
+        var found = false;
+
+        // Her bir hücre için
+        cells.forEach(function(cell) {
+            if (cell.textContent.toLowerCase().indexOf(searchQuery) !== -1) {
+                found = true;
+            }
+        });
+
+        // Arama sonucuna göre satırı göster veya sakla
+        if (found) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
+// Arama input'u değiştiğinde filtreleme fonksiyonunu tetikle
+document.getElementById("searchInput").addEventListener("input", filterTable);
+});
+</script>
+{%endblock js%}

@@ -1,0 +1,23 @@
+{%extends 'yonetim/base/index.html'%}
+{%block content%}
+<div class="container">
+    <h2>Medya Yükleme</h2>
+    
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+      
+        <div>
+            <label for="{{ form.dosya.id_for_label }}">Dosyalar:</label>
+            <input type="file" name="dosya" multiple>
+        </div>
+
+        <!-- Diğer form alanları, eğer varsa -->
+        <div>
+            <label for="{{ form.tur.id_for_label }}">Tür:</label>
+            {{ form.tur }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Yükle</button>
+    </form>
+</div>
+{%endblock content%}

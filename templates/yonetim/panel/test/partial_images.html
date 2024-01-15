@@ -1,0 +1,25 @@
+<div class="modal-header">
+    <h4 class="modal-title">Image Upload</h4>
+</div>
+<div class="modal-body" id="modalBody">
+
+
+<form id="upload-form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Upload</button>
+</form>
+
+{% for i in img %}
+<div class="img-container" onclick="toggleSelection(this, {{ i.id }})">
+    <img src="{{ i.image.url }}"  width="200">
+</div>
+    <!-- Burada silme işlemini de AJAX ile yapabilirsiniz -->
+    
+{% endfor %}
+</div>
+<div class="modal-footer" id="modalFooter">
+    <button type="button" class="btn btn-primary question-image-save btn-sm" >Kayıt et</button>
+    <button type="button" class="btn btn-primary question-image btn-sm" onclick="addImageToEditor()">Kayıt et</button>
+    <button type="button" class="btn btn-warning btn-sm delete-button" data-bs-dismiss="modal"  id="single-delete-button" data-id="">Sil</button>
+</div>

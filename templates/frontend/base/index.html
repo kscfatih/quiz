@@ -1,0 +1,47 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+   {%include 'frontend/base/inc/head.html'%}
+   {%block title%} {%endblock title%}
+   {%block css%} {%endblock css%}
+  
+</head>
+<body class="home page wide wave-style">
+    <a href="{{site_ayar.whatsapp}}" target="_blank" id="whatsapp-icon">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <div class="page">
+        {%include 'frontend/base/inc/top-panel.html'%}
+            {%block menu%} {%endblock menu%}
+            {%block head%}{%endblock head%}
+            {%block slider%} {%endblock slider%}
+        
+        {%block main%} {%endblock main%}
+        {%include 'frontend/base/inc/footer.html'%}
+    </div>
+    {%include 'frontend/base/inc/js.html'%}
+    <script>
+        function updateOnlineUsers() {
+            fetch('/panel/update_user/')
+                .then(response => response.json())
+                .then(data => {
+                
+                });
+        }
+    
+        function fetchOnlineUsers() {
+            fetch('/panel/get_online_users/')
+                .then(response => response.json())
+                .then(data => {
+                
+                });
+        }
+        setInterval(updateOnlineUsers, 1000);
+        setInterval(fetchOnlineUsers, 1000);
+        
+    </script>
+    {%block js%}{%endblock js%}
+   
+</body>
+</html>

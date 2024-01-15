@@ -1,0 +1,78 @@
+<div class="modal fade" id="medyaModal2" tabindex="-1" role="dialog" aria-labelledby="medyaModalLabel2" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="medyaModalLabel2">Medyalar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalB">
+                <!-- Medya listesi -->
+                <div id="medyaList2" class="media-grid"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary ekle_butonu" >Ekle</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let offset2 = 0;
+    const limit2 = 5;
+    let isLoading2 = false;
+    
+    function loadData2() {
+    if (isLoading2) return;
+    
+    isLoading2 = true;
+    
+    let turParam2 = `&tur=RESIM`;
+    
+    $.ajax({
+        url: `/panel/medya_ajax/?limit=${limit2}&offset=${offset2}${turParam2}`,
+        method: 'GET',
+        success: function(data) {
+            isLoading2 = false;
+            let medyaData2 = JSON.parse(data);
+            medyaData2.forEach(item => {
+                $('#medyaList2').addClass('images');
+                let imageUrl = `/${item.fields.dosya}`;
+                medyaHtml2 = `<img src="${imageUrl}" alt="Resim"  class="clickable-image " style="border: none; cursor: pointer;  width: 200px;
+    height: 200px;
+    object-fit: contain;
+    ">`;
+                $('#medyaList2').append('<div class="image-container">' + medyaHtml2 + '</div>');
+            });
+            offset2 += limit2;
+        }
+    });
+}
+
+// Resimlere tıklanabilir özellik ekleme
+$(document).on('click', '.clickable-image', function() {
+    // Resimin URL'sini konsola bas
+    console.log($(this).attr('src'));
+    selectedImage = $(this).clone(); // Seçilen resmi kopyala
+        $('.clickable-image').removeClass('selected'); // Diğer seçimleri kaldır
+        $(this).addClass('selected');
+    // Etrafında kutucuk oluşturma (border ekleyerek)
+    $('.clickable-image').css('border', 'none');  // Diğer resimlerin border'ını sıfırla
+    $(this).css('border', '2px solid red');  // Tıklanan resimin etrafına kırmızı bir kutucuk çiz
+});
+
+// Modal gösterildiğinde
+$('#medyaModal2').on('shown.bs.modal', function () {
+    loadData2();
+});
+
+// Modal içerisinde scroll yapıldığında
+$('#medyaModal2 .modal-body').on('scroll', function() {
+    const nearBottom = $(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight - 5;
+    if(nearBottom) {
+        loadData2();
+    }
+});
+    </script>
+

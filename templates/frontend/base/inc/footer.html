@@ -1,0 +1,63 @@
+{%load static%}
+<div class='footer_wrapper_copyright'>
+ 
+    <div class='half_sin_wrapper'>
+        <canvas class='half_sin' data-bg-color='23,108,129' data-line-color='23,108,129'></canvas>
+    </div>
+  
+    <div class='copyrights_area'>
+ 
+        <div class='half_sin_wrapper'>
+            <canvas class='footer_half_sin' data-bg-color='14,64,77' data-line-color='14,64,77'></canvas>
+        </div>
+    
+        <div class='container'>
+            <div class='copyrights_container'>
+                <div class='copyrights'>{{site_ayar.footer_text}}</div>
+                <div class='copyrights_panel'>
+                    <div class='copyrights_panel_wrapper'>
+                        
+                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+</div>
+<script>
+   
+function hideElements() {
+    let selectors = ['.footer_image', '.right-pattern', '.left-pattern'];
+    selectors.forEach(selector => {
+        let elements = document.querySelectorAll(selector);
+        elements.forEach(element => {
+            element.style.display = 'none';
+        });
+    });
+}
+
+
+hideElements();
+
+let observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+        if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+            for (let i = 0; i < mutation.addedNodes.length; i++) {
+                let newNode = mutation.addedNodes[i];
+                if (newNode.nodeType === 1 && 
+                   (newNode.matches('.footer_image') || 
+                    newNode.matches('.right-pattern') || 
+                    newNode.matches('.left-pattern'))) {
+                    hideElements();
+                }
+            }
+        }
+    });
+});
+
+observer.observe(document.body, {
+    childList: true, 
+    subtree: true 
+});
+
+</script>

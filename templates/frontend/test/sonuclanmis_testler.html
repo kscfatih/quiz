@@ -1,0 +1,272 @@
+{%extends 'frontend/base/index.html'%}
+{% load custom_filters  %}
+{%block css%}
+<style>
+    .h3a {
+    text-align: center;
+    color: #fec20b;
+    margin: 0;
+     padding: 5px;
+    font-weight: bold;
+    }
+    .test-header {
+    display: flex;
+    
+    flex-direction: column;
+    align-items: center; /* Yatayda ortala */
+    justify-content: center; /* Dikeyde ortala */
+    height: 30vh; /* Bu örnek için ekranın tam yüksekliğini kaplaması için. Gereksinimlere bağlı olarak bu değeri değiştirebilirsiniz. */
+    }
+    .test-headera {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Yatayda ortala */
+    justify-content: center; /* Dikeyde ortala */
+    height: 50vh; /* Bu örnek için ekranın tam yüksekliğini kaplaması için. Gereksinimlere bağlı olarak bu değeri değiştirebilirsiniz. */
+    }
+    .test-headera h3,  /* .test-header içerisindeki h3 etiketleri için */
+.test-header p {  /* .test-header içerisindeki p etiketleri için, diğer etiketleri ekleyebilirsiniz */
+    font-size: 20px;  /* istediğiniz font boyutunu buraya yazın */
+}
+.grid_row_ {
+    border: 4px solid #26b4d7; 
+    border-radius: 15px; 
+    padding: 10px;
+}
+
+</style>
+{%endblock css%}
+{%block title%} <title> {{ alt_kategori.name }} Quiz</title>{%endblock title%}
+
+{%block menu%} {%include 'frontend/base/inc/menu.html'%} {%endblock menu%}
+
+{%block head%}
+<section class='page_title wave'>
+    <div class='container'>
+        <div class='title'>
+            <h1>{{ alt_kategori.name }} Sonuçlanan Quizler</h1></div>
+        <nav class="bread-crumbs"><a href="index-2.html" >Ana sayfa</a><i class="delimiter fa fa-chevron-right"></i><span class="current">{{ alt_kategori.name }} sonuçlanmış quizler</span></nav>
+        <!-- .breadcrumbs -->
+    </div>
+    <canvas class='breadcrumbs' data-bg-color='#f8f2dc' data-line-color='#f9e8b2'></canvas>
+</section>
+
+{%endblock head%}
+
+{%block main%}  
+<div id="main" class="site-main">
+    <div class="page_content">
+        <!-- pattern container / -->
+        <div class='left-pattern pattern pattern-2'></div>
+        <main>
+            
+
+          
+            <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+     crossorigin="anonymous"></script>
+<!-- sonuclanmıs test üst -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-4930971127953627"
+     data-ad-slot="9816478012"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+           
+            <h3 class="ce_title h3a">Sonuçlanmış {{ alt_kategori.name }} Quiz'ler</h3>
+           
+            
+            {% for test in testler %}
+            
+            {% now "Y-m-d H:i:s" as current_time_string %}
+                            {% with current_time=current_time_string|to_datetime active_time=test.options.activeInterval|string_to_datetime deactive_time=test.options.deactiveInterval|string_to_datetime %}
+                            {% if current_time >= deactive_time %}
+            <div class='grid_row grid_row_ clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+               
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <div class="test-headera">
+                                <h3 class="ce_title h3a">{{ test.title }}</h3>
+                           
+                            {% if current_time < active_time %}
+                                <h3 class="h3a">{{ test.options.active_date_pre_start_message|safe }}</h3>
+                                <h3 class=" h3a">Bu sınav henüz başlamadı ! Başlangıç tarihi : {{ test.options.activeInterval|custom_date_format }}</h3>
+                            {% elif active_time <= current_time and current_time < deactive_time %}
+                                <h3 class=" h3a"><span style="color: #26b4d7">Devam Ediyor !</span><br>Bu sınavın bitiş tarihi {{ test.options.deactiveInterval|custom_date_format }}'dir.</h3>
+                            {% else %}
+                                <h3 class=" h3a" style="color: red;">{{ test.options.quiz_tackers_message|safe }}</h3>
+                            {% endif %}
+                      
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>       
+                            <p><img class="aligncenter  size-full image-type noborder" src="{{ test.quiz_image }}" style="cursor: pointer;" alt="responsive_retina" width="450" height="450" /></p>
+                           
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div>
+                            {{ test.description|safe }}
+                            {% with current_time=current_time_string|to_datetime active_time=test.options.activeInterval|string_to_datetime deactive_time=test.options.deactiveInterval|string_to_datetime %}
+                            {% if current_time < active_time %}
+                              {% elif active_time <= current_time and current_time < deactive_time %}
+                            <a  href="/panel/{{ test.tema }}/{{ test.id }}" target="_blank"  class="basla cws_button alt xlarge"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Sınava Başla</span></a>
+                            {% else %} <a  href="/test-sonuc/{{ test.id }}" target="_blank"  class=" cws_button alt xlarge"><span class="cws_button_inner" data-bg_hover_color="" data-bg_color="" data-text_color="">Sınav Sonuçlarını Gör</span></a>
+                            {% endif %}{% endwith %}
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+               
+            {% if   forloop.counter  == 1 %}
+                
+                <div>
+                    <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                        <div class='grid_col grid_col_12'>
+                            <div class='ce clearfix'>
+                                <div>
+                                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                                    crossorigin="anonymous"></script>
+                               <!-- sonuclanmış test 2 -->
+                               <ins class="adsbygoogle"
+                                    style="display:block"
+                                    data-ad-client="ca-pub-4930971127953627"
+                                    data-ad-slot="5317710243"
+                                    data-ad-format="auto"
+                                    data-full-width-responsive="true"></ins>
+                               <script>
+                                    (adsbygoogle = window.adsbygoogle || []).push({});
+                               </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+            {% elif   forloop.counter  == 2 %}
+               
+                <div>
+                    <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                        <div class='grid_col grid_col_12'>
+                            <div class='ce clearfix'>
+                                <div>
+                                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                                    crossorigin="anonymous"></script>
+                               <!-- sonuçlanmış test 3 -->
+                               <ins class="adsbygoogle"
+                                    style="display:block"
+                                    data-ad-client="ca-pub-4930971127953627"
+                                    data-ad-slot="9065383565"
+                                    data-ad-format="auto"
+                                    data-full-width-responsive="true"></ins>
+                               <script>
+                                    (adsbygoogle = window.adsbygoogle || []).push({});
+                               </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+      
+            {% elif   forloop.counter  == 3 %}
+                
+                <div>
+                    <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                        <div class='grid_col grid_col_12'>
+                            <div class='ce clearfix'>
+                                <div>
+                                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                                    crossorigin="anonymous"></script>
+                               <!-- sonuçlanmış test 4 -->
+                               <ins class="adsbygoogle"
+                                    style="display:block"
+                                    data-ad-client="ca-pub-4930971127953627"
+                                    data-ad-slot="7161274956"
+                                    data-ad-format="auto"
+                                    data-full-width-responsive="true"></ins>
+                               <script>
+                                    (adsbygoogle = window.adsbygoogle || []).push({});
+                               </script>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% else %}
+            <div>
+                <div class='grid_row clearfix' style='padding-top: 50px;padding-bottom: 50px;'>
+                    <div class='grid_col grid_col_12'>
+                        <div class='ce clearfix'>
+                            <div>
+                                <hr>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {%endif%}
+    
+            {% endif %}
+            {% endwith %}
+            {% endfor %}
+          
+          
+        </main>
+        <div class='right-pattern pattern pattern-2'></div>
+        <div class="footer_image"></div>
+    </div>
+    <!-- svg filter -->
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" style='display:none;'>
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+    <!-- svg filter / -->
+</div>
+
+
+{%endblock main%}
+
+{%block js%}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    // Resmi seç
+    var image = document.querySelector(".aligncenter.size-full.image-type.noborder");
+
+    // Resme tıklama olayı ekle
+    image.addEventListener("click", function() {
+        // a etiketini seç
+        var link = document.querySelector("a.basla.cws_button.small");
+        // a etiketinin href özelliğini al ve yeni bir sekmede aç
+        window.open(link.getAttribute("href"), '_blank');
+    });
+});
+</script>
+
+{%endblock js%}

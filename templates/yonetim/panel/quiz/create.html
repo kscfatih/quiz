@@ -1,0 +1,1860 @@
+{%extends 'yonetim/base/index.html'%}
+
+{%block css%}
+<style>
+     .img-container {
+        width: 125px;
+        height: 125px;
+        overflow: hidden;
+        margin: 10px;
+        display: inline-block;
+    }
+    .img-container img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .selected {
+        border: 2px solid blue;
+    }
+
+
+    .media-grid {
+    display: grid;
+    gap: 20px;
+}
+
+/* For images and videos */
+.media-grid.images, .media-grid.videos {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* For music */
+.media-grid.music {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+    .modal-dialog {
+        max-height: 80vh;
+        overflow-y: initial !important;
+    }
+    .modal-body {
+        height: 60vh;
+        overflow-y: auto;
+    }
+    #medyaList > div {
+    cursor: pointer; /* Fare imlecini el şeklinde göster */
+}
+
+    .media-grid {
+    display: grid;
+    gap: 20px;
+}
+    .selected-image-container {
+    text-align: center; 
+}
+.custom-selected-card {
+            background-color: #5f63f2 !important;
+        }
+#selected-image {
+    max-width: 300px; 
+    max-height: 300px; 
+    width: auto; 
+    height: auto; 
+    display: block; 
+    margin: 0 auto; 
+}
+    .img-container {
+        width: 125px;
+        height: 125px;
+        overflow: hidden;
+        margin: 10px;
+        display: inline-block;
+    }
+    .img-container img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .tema-img {
+    width: 200px;
+    height: 200px;
+    margin: 0 10px; 
+    border: 3px solid transparent; 
+    cursor: pointer; 
+    display: inline-block; 
+    vertical-align: top; 
+}
+
+#uploaded-image {
+    width: 300px;
+    height: 300px;
+    object-fit: cover; 
+}
+
+
+.tema-img.selected {
+    border-color: blue; 
+}
+
+.selected-row {
+    background-color: #5869ff; 
+}
+
+.image-wrapper {
+    width: 100%;
+    max-width: 1080px;
+    height: 0;
+    padding-bottom: 100%; 
+    position: relative; 
+    overflow: hidden; 
+}
+
+.image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+.selected {
+        border: 2px solid blue;
+    }
+
+  
+.close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+button {
+    padding: 8px 16px;
+    margin-left: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button.save {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+button.close-btn {
+    background-color: #f44336;
+    color: #fff;
+}
+#mytable tr, #mytable td {
+    transition: none !important; /* Eğer geçiş efekti varsa engelliyoruz */
+}
+
+#mytable tr:hover, #mytable td:hover {
+    background-color: inherit !important;
+    color: inherit !important; /* Eğer yazı rengi de değişiyorsa */
+    /* Diğer potansiyel değişen özellikleri ekleyin */
+}
+.tema-buton {
+    width: auto;
+}
+
+</style>
+{%endblock css%}
+
+{%block content%}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert-big alert alert-success" role="alert">
+            <div class="alert-content">
+                <h6 class="alert-heading">Success</h6>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row">
+    <div class="col-12">
+
+        <div class="breadcrumb-main">
+            {%if test%}
+            <h4 class="text-capitalize breadcrumb-title">Test Düzenle</h4>
+            {%else%}
+            <h4 class="text-capitalize breadcrumb-title">Test Oluştur</h4>
+            {%endif%}
+        </div>
+
+    </div>
+   
+    <div class="col-12">
+        <div class="card card-default card-md mb-4">
+            
+            <div class="card-body">
+                <div class="tab-wrapper">
+                    <form id="test-form" method="POST">
+                        {%csrf_token%}
+                    <div class="atbd-tab tab-horizontal">
+                        <ul class="nav nav-tabs vertical-tabs" role="tablist">
+
+                            <li class="nav-item">
+                                <a class="nav-link active" id="tab-v-1-tab" data-toggle="tab" href="#tab-v-1" role="tab" aria-controls="tab-v-1" aria-selected="true">Genel</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-v-4-tab" data-toggle="tab" href="#tab-v-4" role="tab" aria-controls="tab-v-4" aria-selected="false">Zamanlama</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-v-2-tab" data-toggle="tab" href="#tab-v-2" role="tab" aria-controls="tab-v-2" aria-selected="false">Sorular</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="tab-v-3-tab" data-toggle="tab" href="#tab-v-3" role="tab" aria-controls="tab-v-3" aria-selected="false">Sonuç</a>
+                            </li>
+                            <li class="nav-item ml-auto">
+                            <div class="col-md-3">
+                                <div class="layout-button mt-0 mb-3">
+                                    <button type="submit" style="width: 100px;" class="btn btn-primary btn-default btn-squared px-60">Kaydet</button>
+                                </div>
+                                
+                            </div>
+                             
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content">
+
+
+
+                            <div class="tab-pane fade show active" id="tab-v-1" role="tabpanel" aria-labelledby="tab-v-1-tab">
+                                
+                                    <div class="row">
+                                        <div class="col-md-10 mb-25">
+                                            <label for="test-baslik" class=" color-dark fs-14 fw-500 align-center">Başlık</label>
+                                            <input type="text" name="test-baslik" class="form-control ih-medium ip-gray radius-xs b-light px-15" id="test-baslik" {% if test %} value="{{test.title}}"  {% else %}value="Test başlığı giriniz..." {% endif %}>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="layout-button  mt-4">
+                                                {% if test %}   <a  href="/panel/quiz1/{{test.id}}" target="_blank" ><button type="button" style="width: 165px;" class="btn btn-primary btn-default btn-squared px-60">Testi Gör</button></a>   {%endif%}   
+                                            </div>
+                                            
+                                        </div>
+                                      
+                                        <div class="col-md-12 mb-25" id="resimYukle" {% if test %} style="display:none;" {%endif%} >
+                                            <label for="test-resim" class="color-dark fs-14 fw-500 align-center">Resim</label>
+                                            <div class="atbd-upload mb-25" id="test-resim">
+                                                <div class="atbd-upload-avatar media-import mb-25 dropzone-lg-s">
+                                                    <p class="color-light mt-0 fs-15">Soru için resim yükleyin ...</p>
+                                                </div>
+                                                <div class="avatar-up">
+                                                    <input type="text" class="upload-avatar-input" id="resim-yukle-input" onchange="showImage(this)">
+                                                    
+                                                   
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mb-25">
+                                            <div class="selected-image-container">
+                                                {% if test %}
+                                                <img src="{{test.quiz_image}}" data-id="0"  alt="" id="selected-image">
+                                                {% else %} 
+                                                <img src="" alt="" data-id="1" id="selected-image">
+                                                 {%endif%}   
+                                                <button type="button"  class="btn btn-danger btn-sm" id="remove-image">Sil</button>
+                                                <input  name="test-resim" type="hidden" id="img-id">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mb-25">
+                                            <label for="test-aciklama" class=" color-dark fs-14 fw-500 align-center">Açıklama</label>
+                                            <textarea name="test-aciklama" id="test-aciklama" class="col-12 mb-3">
+                                                {% if test %}
+                                                {{test.description}}
+                                                {% else %}
+                                                
+                                                {% endif %}
+                                            </textarea>
+                                            <script>
+                                            document.addEventListener('DOMContentLoaded', (event) => { 
+                                                tinymce.init({ 
+                                                    selector: '#test-aciklama',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                            });
+                                                </script>
+                                        </div>
+
+                                        
+                                        <div class="col-md-5 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Kategori</label>
+                                            <select name="test-kategori" class="custom-select is-valid form-control select-arrow-none ih-medium  radius-xs b-light shadow-none color-light  fs-14" id="validationServer04" aria-describedby="validationServer04Feedback" >
+                                                <option selected disabled value="">Seçiniz</option>
+                                                {% for i in kategoriler_test%}
+                                                
+                                                <option  {% if test %}   {% if test.quiz_category.id == i.id %} style="background-color:green;" selected   {% endif %} value="{{i.id}}"  {%else%}  value="{{i.id}}"  {% endif %} >{{i.title}}</option> 
+                                                {% endfor %} 
+                                            </select>
+                                        </div>
+                                        <div class="col-md-5 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Öne Çıkarılacak Kategoriyi Seçin</label>
+                                            <select name="one_cikan" class="custom-select is-valid form-control select-arrow-none ih-medium  radius-xs b-light shadow-none color-light  fs-14" id="validationServer04" aria-describedby="validationServer04Feedback" >
+                                                <option selected disabled value="">Seçiniz</option>
+                                                <option  value="0">Hiçbiri</option>
+                                                {% for a in alt_kategori %}
+                                                
+                                                <option 
+                                                {% if test %}
+                                                {% if a.one_cikan_test.id == test.id %}
+                                                selected 
+                                                {% endif %}
+                                                {% endif %}
+                                                
+                                                value="{{a.id}}">{{a.name}}</option> 
+                                                {% endfor %} 
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Menüye Bağla</label>
+                                            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#categoryModal">Menü Seç</a>
+                                        </div>
+                                        <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">    
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="categoryModalLabel">Kategorileri Seç</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                       
+                                                        {% for u in ust_kategori %}
+                                                        <div class="form-check">
+                                                            <input class="form-check-input  ust-input category-input" 
+                                                                   type="checkbox" 
+                                                                   name="ust_category"  
+                                                                   value="{{ u.id }}" 
+                                                                   id="ust-{{ u.id }}"
+                                                                   {% if u in secili_ust_kategoriler %}checked{% endif %}>  
+                                                            <label class="form-check-label" for="ust-{{ u.id }}">
+                                                                {{ u.name }}
+                                                            </label>
+                                                        </div>
+                                                                                                    
+                                                        {% for a in alt_kategori %}
+                                                            {% if a.upper_category_id == u.id %}
+                                                                <div class="form-check ml-3">
+                                                                    <input class="form-check-input alt-input category-input" 
+                                                                           data-ust-id="{{ u.id }}" 
+                                                                           name="alt_category" 
+                                                                           type="checkbox" 
+                                                                           value="{{ a.id }}" 
+                                                                           id="alt-{{ a.id }}"
+                                                                           {% if a in secili_alt_kategoriler %}checked{% endif %}> 
+                                                                    <label class="form-check-label" for="alt-{{ a.id }}">
+                                                                        {{ a.name }}
+                                                                    </label>
+                                                                </div>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                     
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                                                        <button type="button" class="save-btn-category btn btn-primary">Seçimi Kaydet</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Durumu</label>
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="yayinlanma-durumu" {% if test.published == "1" %} checked {% endif %}   value="1" id="radio-hl1"  >
+                                                    <label for="radio-hl1">                                                        
+                                                        <span class="radio-text">Yayınlandı</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="yayinlanma-durumu" {% if test.published == "0" %} checked {% endif %} value="0" id="radio-hl2">
+                                                    <label for="radio-hl2">
+                                                        <span class="radio-text">Yayınlanmadı</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Sayfa yüklendiğinde testi başlat</label>
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="enable_autostart" value="on" id="radio-hl11" {% if test_option.enable_autostart == "on" %} checked {% else %} {% endif %} >
+                                                    <label for="radio-hl11">
+                                                        
+                                                        <span class="radio-text">Evet</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="enable_autostart" value="off" {% if test_option.enable_autostart == "off" %} checked {% else %} {% endif %}id="radio-hl21">
+                                                    <label for="radio-hl21">
+                                                        <span class="radio-text">Başlat butonu etkinleştir</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Cevapları rastgele sırala</label>
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                   
+                                                    <input class="radio" type="radio" name="randomize_answers" {% if test_option.randomize_answers == "on" %} checked {% else %} {% endif %} value="on" id="c-r-e-t" >
+                                                    <label for="c-r-e-t">
+                                                        <span class="radio-text">Evet</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="randomize_answers" {% if test_option.randomize_answers == "off" %} checked {% else %} {% endif %} value="off" id="c-r-e-f" >
+                                                    <label for="c-r-e-f">
+                                                        <span class="radio-text">Hayır</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Soruları rastgele sırala</label>
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="randomize_questions" {% if test_option.randomize_questions == "on" %} checked {% else %} {% endif %} value="on" id="s-r-e-t" >
+                                                    <label for="s-r-e-t">
+                                                        <span class="radio-text">Evet</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="randomize_questions" {% if test_option.randomize_questions == "off" %} checked {% else %} {% endif %} value="off" id="s-r-e-f" >
+                                                    <label for="s-r-e-f">
+                                                        <span class="radio-text">Hayır</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Gezinme çubuğu</label>
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="enable_navigation_bar" {% if test_option.enable_navigation_bar == "on" %} checked {% else %} {% endif %} value="on" id="g-c-t">
+                                                    <label for="g-c-t">
+                                                        <span class="radio-text">Aktif</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="enable_navigation_bar" value="off" id="g-c-f" {% if test_option.enable_navigation_bar == "off" %} checked {% else %} {% endif %}  >
+                                                    <label for="g-c-f">
+                                                        <span class="radio-text">Kapalı</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Soruları zorunlu yap</label>
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="make_questions_required" {% if test_option.make_questions_required == "on" %} checked {% else %} {% endif %} value="on" id="s-z-y-t" >
+                                                    <label for="s-z-y-t">
+                                                        <span class="radio-text">Aktif</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="make_questions_required" value="off" id="s-z-y-f" {% if test_option.make_questions_required == "off" %} checked {% else %} {% endif %} >
+                                                    <label for="s-z-y-f">
+                                                        <span class="radio-text">Kapalı</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Yanlış cevapları göster :</label>
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio alanlar_check_" type="radio" name="yanlis_soru"  value="on" id="yanlis_soru" {% if yanlis_soru == "on" %} checked {% else %} {% endif %} >
+                                                    <label for="yanlis_soru">
+                                                        <span class="radio-text">Aktif</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio alanlar_check_" type="radio" name="yanlis_soru" value="off" id="yanlis_soru_" {% if yanlis_soru == "off" %} checked {% else %} {% endif %}>
+                                                    <label for="yanlis_soru_">
+                                                        <span class="radio-text">Kapalı</span>
+                                                    </label>
+                                                </div>
+                                            
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Kullanıcı formu :</label>
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="kullanici_formu"  value="1" id="kullanici_formu" {% if kullanici_formu == "1" %} checked {% else %} {% endif %}>
+                                                    <label for="kullanici_formu">
+                                                        <span class="radio-text">Aktif</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio" type="radio" name="kullanici_formu" value="0" id="kullanici_formu_" {% if kullanici_formu == "0" %} checked {% else %} {% endif %} >
+                                                    <label for="kullanici_formu_">
+                                                        <span class="radio-text">Kapalı</span>
+                                                    </label>
+                                                </div>
+                                                <button type="button" class="btn btn-primary form-duzenle-buton" style="display:block;">Düzenle</button>
+                                                <div class="modal fade" id="alanlarModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                      <div class="modal-content">
+                                                        <div class="modal-header">
+                                                          <h5 class="modal-title" id="modalLabel">Bilgi formu alanları <span style="font-size : 10px;">(Seçtiğiniz alanlar zorunlu olarak gözükecektir.)</span></h5>
+                                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <input type="hidden" id="alanlar" name="alanlar" value="">
+                                                            {%for i in alanlar%}
+                                                            <input type="checkbox" class="alanlar_check alanlar_check_" 
+                                                            
+                                                            {% for x in kayitli_alan %}
+                                                            {% if x == i.id %}
+                                                                checked
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            value="{{i.id}}">{{i.name}}<br>
+                                                            {%endfor%}
+                                                            
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                          <button type="button" class="btn btn-primary" id="kaydetalan">Kaydet</button>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-25">
+                                            <label for="test-durum" class=" color-dark fs-14 fw-500 align-center">Sertifika :</label>
+                                            <div class="radio-horizontal-list d-flex">
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio alanlar_check_" type="radio" name="enable_certificate"  value="on" id="enable_certificate" {% if test_option.enable_certificate == "on" %} checked {% else %} {% endif %} checked>
+                                                    <label for="enable_certificate">
+                                                        <span class="radio-text">Aktif</span>
+                                                    </label>
+                                                </div>
+                                                <div class="radio-theme-default custom-radio ">
+                                                    <input class="radio alanlar_check_" type="radio" name="enable_certificate" value="off" id="enable_certificate_" {% if test_option.enable_certificate == "off" %} checked {% else %} {% endif %}>
+                                                    <label for="enable_certificate_">
+                                                        <span class="radio-text">Kapalı</span>
+                                                    </label>
+                                                </div>
+                                            
+                                            </div>
+                                        </div>
+                                      <div class="col-md-12 mb-25">
+                                            <div class="card card-default card-md mb-4">
+                                                <div class="card-header">
+                                                    <h6>Temalar</h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="columnCard-wrapper">
+                                                        <div class="row">
+                                                            <input type="hidden" id="selectedQuiz" name="tema" {%if test.tema %} value="{{test.tema}}" {%else%} value="" {%endif%} >
+                                                            <div class="col-lg-3 mb-20">
+                                                                <div class="card temalar card-default card-md bg-white "  data-quiz="quiz1">
+                                                                    <div class="card-body">
+                                                                        
+                                                                            <div class="gc ">
+                                                                                <div class="gc__img">
+                                                                                    <img src="https://quizvar.com/medya_dosyalari/12_rlnevUI.png" alt="img" class="w-100 radius-xl">
+                                                                                </div>
+                                                                            </div>
+                                                                            <a  href="/panel/quiz1/1205"  class="btn btn-warning tema-buton mt-2"  target="_blank"><span style="cursor: pointer;" >Demo Görüntüle</span></a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3 mb-20">
+                                                                <div class="card temalar card-default card-md bg-white "  data-quiz="quiz2">
+                                                                    <div class="card-body">
+                                                                        
+                                                                        <div class="gc ">
+                                                                            <div class="gc__img">
+                                                                                <img src="https://quizvar.com/medya_dosyalari/13_5hS87b9.png" alt="img" class="w-100 radius-xl">
+                                                                            </div>
+                                                                        </div>
+                                                                        <a  href="/panel/quiz2/1205"  class="btn btn-warning tema-buton mt-2" target="_blank"><span style="cursor: pointer;" >Demo Görüntüle</span></a>
+                                                                </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3 mb-20">
+                                                                <div class="card temalar card-default card-md bg-white "  data-quiz="quiz3">
+                                                                    <div class="card-body">
+                                                                        <div class="gc ">
+                                                                            <div class="gc__img">
+                                                                                <img src="https://quizvar.com/medya_dosyalari/14_0fcGOPt.png" alt="img" class="w-100 radius-xl">
+                                                                            </div>
+                                                                        </div>
+                                                                        <a  href="/panel/quiz3/1205"  class="btn btn-warning tema-buton mt-2 "  target="_blank"><span style="cursor: pointer; " >Demo Görüntüle</span></a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-3 mb-20">
+                                                                <div class="card temalar card-default card-md bg-white "  data-quiz="quiz4">
+                                                                    <div class="card-body">
+                                                                        <div class="gc ">
+                                                                            <div class="gc__img">
+                                                                                <img src="https://quizvar.com/medya_dosyalari/15_oYMC6YZ.png" alt="img" class="w-100 radius-xl">
+                                                                            </div>
+                                                                        </div>
+                                                                        <a href="/panel/quiz4/1205"  class="btn btn-warning tema-buton mt-2"  target="_blank"><span style="cursor: pointer;" >Demo Görüntüle</span></a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                
+                            </div>
+
+
+
+
+
+                            <div class="tab-pane fade" id="tab-v-2" role="tabpanel" aria-labelledby="tab-v-2-tab">
+                                <div class="table4  p-25 bg-white mb-30">
+                                    <div class="table-responsive ">
+                                        <div class="col-md-12 mb-25">
+                                            <select id="filterByCategory" class="form-control d-inline-block w-auto mr-3">
+                                                <option value="">Kategori filtrele</option>
+                                                {% for i in kategoriler %}
+                                                <option value="{{i.id}}">{{i.title}}</option>
+                                                {% endfor %}
+                                            </select>
+                                   
+                                            <input  id="search-input" type="text"  placeholder="Sorularda ara...">
+                                          
+                                       
+                                            <table id="myTable" class="table mb-0"   >
+                                                <thead>
+                                                    <tr class="userDatatable-header">
+                                                        <th>
+                                                            <span class="userDatatable-title">ID</span>
+                                                        </th>
+                                                        <th>
+                                                            <span class="userDatatable-title">Soru</span>
+                                                        </th>
+                                                        <th>
+                                                            <span class="userDatatable-title">Kategori</span>
+                                                        </th>
+                                                        <th>
+                                                            <span class="userDatatable-title">Oluşturulma Tarihi</span>
+                                                        </th>
+                                                      
+                                                        <th>
+                                                            <span class="userDatatable-title">Aksiyon</span>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                            <div class="col-md-6 mb-25 mt-25">
+                                                <div class="row">
+                                                    <button id="prev-btn" class="btn btn-primary" disabled>Önceki</button>
+                                                    <button id="next-btn" class="btn btn-primary" disabled>Sonraki</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive ">
+                                        Eklenen Sayi : <span id="eklenen-sayi" >123</span>
+                                        <div class="col-md-12 mb-25">
+                                           <table id="selectedTable" class="table mb-0"   >
+                                                <thead>
+                                                    <tr class="userDatatable-header">
+                                                        <th>
+                                                            <span class="userDatatable-title">ID</span>
+                                                        </th>
+                                                        <th>
+                                                            <span class="userDatatable-title">Soru</span>
+                                                        </th>
+                                                        <th>
+                                                            <span class="userDatatable-title">Kategori</span>
+                                                        </th>
+                                                        <th>
+                                                            <span class="userDatatable-title">Oluşturulma Tarihi</span>
+                                                        </th>
+                                                        <th>
+                                                            <span class="userDatatable-title">Düzenle</span>
+                                                        </th>
+                                                        <th>
+                                                            <span class="userDatatable-title">Sil</span>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody >
+                                                    {% if sorular %}
+                                                    {% for i in sorular %}
+                                                    <tr data-id="{{i.id}}">
+                                                    <td> 
+                                                    <input type="hidden" value="{{i.id}}" name="test-id[]">{{i.id}}</td>
+                                                    <td>{{i.question}}</td>
+                                                    <td>{{i.category.title}}</td>
+                                                    <td>{{i.create_date}}</td>
+                                                    <td><button type="button" class="btn btn-danger delete-button-5" data-id="{{i.id}}">Sil</button></td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                    {% endif %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                
+                                
+
+
+
+
+
+
+
+                            <div class="tab-pane fade" id="tab-v-3" role="tabpanel" aria-labelledby="tab-v-3-tab">
+                                <div class="form-group">
+                                    <label for="editor5" class="il-gray fs-14 fw-500 align-center">Değerlendirme formu başlığı :</label>
+                                    <textarea name="rate_form_title" id="editor5" rows="10" cols="80">
+                                        {% if test_option.rate_form_title %}
+                                        {{test_option.rate_form_title}}
+                                        {% else %}
+                                     
+                                        {% endif %}
+                                        
+                                   </textarea>
+                                </div>
+                                <script>
+                                    tinymce.init({ 
+                                                    selector: '#editor5',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                  
+                                </script>
+                                <div class="form-group">
+                                    <label for="a1" class="il-gray fs-14 fw-500 align-center">Geçme skoru</label>
+                                    <input type="number" name="pass_score" class="form-control ih-medium ip-light radius-xs b-light px-15" id="a1" {% if test_option.pass_score %} value="{{test_option.pass_score}}" placeholder="{{test_option.pass_score}}" {% else %} placeholder="Geçme skoru girin ..." {% endif %} >
+                                </div>
+                                <div class="form-group">
+                                    <label for="editor6" class="il-gray fs-14 fw-500 align-center">Testi geçenler için mesaj :</label>
+                                    <textarea name="pass_score_message" id="editor6" rows="10" cols="80">
+                                        {% if test_option.pass_score_message %}
+                                        {{test_option.pass_score_message}}
+                                        {% else %}
+                                        
+                                        {% endif %}
+                                        </textarea>
+                                </div>
+                                <script>
+                                      tinymce.init({ 
+                                                    selector: '#editor6',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                </script>
+                               
+                                    <button type="button" class="btn btn-primary" id="aralik-ekle">+ Aralık Ekle</button>
+                             
+                                <div class="table4 p-25 bg-white mb-30">
+                                    <div class="table-responsive">
+                                        <table class="table mb-0" id="aralik-tablo">
+                                            <thead>
+                                                <tr class="userDatatable-header">
+                                                    <input type="hidden" name="interval-post" id="interval-post">
+                                                    <th>
+                                                        <span class="userDatatable-title">Asgari</span>
+                                                    </th>
+                                                    <th>
+                                                        <span class="userDatatable-title">Maksimum</span>
+                                                    </th>
+                                                    <th>
+                                                        <span class="userDatatable-title">Metin</span>
+                                                    </th>
+                                                    <th>
+                                                        <span class="userDatatable-title">Gif</span>
+                                                    </th>
+                                                    <th>
+                                                        <span class="userDatatable-title">Aksiyon</span>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                    {% if test_interval %}
+                                                    
+                                                    {% for i in test_interval%}
+                                                    <tr>
+                                                    <td>
+                                                    <div class="userDatatable-content">
+                                                        <input type="number" value="{{i.interval_min}}"  class="interval-skor-min form-control ih-medium ip-light radius-xs b-light px-15" placeholder="Skor girin ...">
+                        
+                                                   
+                                                    </div>  
+                                                    </td>
+                                                    <td>
+                                                        <div class="userDatatable-content">
+                                                    <input type="number" value="{{i.interval_max}}" class="interval-skor-max form-control ih-medium ip-light radius-xs b-light px-15" placeholder="Skor girin ..."/>
+                                                     
+                                                    </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="userDatatable-content">
+                                                     <input type="text" value="{{i.interval_text}}" class="interval-metin form-control ih-medium ip-light radius-xs b-light px-15" placeholder="Metin girin"/>
+                                                      
+                                                    </div>
+                                                    </td>
+                                                    <td>
+                                                        {%if i.interval_image == None or i.interval_image == ''%}
+                                                    <button type="button" class="answer-image btn btn-info btn-default btn-rounded ">Medya Ekle
+                                                                                        </button>
+                                                                                        
+                                                        {%else%}
+                                                        <div class="row"><img  src="{{i.interval_image}}" width="75">
+                                                            <input type="hidden" class="answer-image-hidden" name="answer_image[]" value="{{i.interval_image}}">
+                                                            <button type="button" class="remove-image btn-xs btn btn-danger">Sil</button></div>
+                                                        {%endif%}
+                                                    </td>
+                                                    <td>
+                                                        <div class="userDatatable-content">
+                                                            
+                                                        <button type="button" class="btn btn-danger aralik-sil">Sil</button>
+                                                        
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                    {% endfor %}
+                                                    
+                                                    {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+                            <div class="tab-pane fade" id="tab-v-4" role="tabpanel" aria-labelledby="tab-v-4-tab">
+                                <div class="form-group  row form-group-calender">
+                                    <label for="activate"> Başlangıç tarihi </label>
+                                    <input type="datetime-local" class="form-control" id="activate" {% if test_option %} value="{{test_option.activeInterval}}" {% endif %} name="activeInterval" >          
+                                </div>
+                                <div class="form-group  row form-group-calender">
+                                    <label for="deactivate"> Bitiş tarihi  </label>
+                                   <input type="datetime-local" class="form-control" id="deactivate" {% if test_option %} value="{{test_option.deactiveInterval}}" {% endif %} name="deactiveInterval" >
+                                </div>
+                                <div class="form-group">
+                                    
+                                 <label for="editor" class="il-gray fs-14 fw-500 align-center">Günü başlamamış sınav mesajı :</label>
+                                 <textarea name="active_date_pre_start_message" id="editor" rows="10" cols="80">
+                                    {% if test_option %}
+                                    {{test_option.active_date_pre_start_message}}
+                                    {% else %}
+                                 
+                                    {% endif %}
+                                </textarea>
+                                </div>
+
+                                
+                                <div class="form-group">
+                                    <label for="editor8" class="il-gray fs-14 fw-500 align-center">Günü biten sınav mesajı :</label>
+                                    <textarea name="quiz_tackers_message" id="editor21" rows="10" cols="80">
+                                        
+                                    {% if test_option %}
+                                    {{test_option.quiz_tackers_message}}
+                                    {% else %}
+                               
+                                    {% endif %}
+                                        
+                                   </textarea>
+                                </div>
+                                <script>
+                                      tinymce.init({ 
+                                                    selector: '#editor2',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                                tinymce.init({ 
+                                                    selector: '#editor21',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                                tinymce.init({ 
+                                                    selector: '#editor',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                    
+                                </script>
+                                <hr>
+                                <div class="form-group">
+                                    <label for="element-text3" class="il-gray fs-14 fw-500 align-center">Kronometre (sn):</label>
+                                    <input type="number" name="timer" class="form-control ih-medium ip-light radius-xs b-light px-15" id="element-text3" {% if test_option %} value="{{test_option.timer}}" placeholder="{{test_option.timer}}" {% else %} placeholder="017123456789" {% endif %}>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editor3" class="il-gray fs-14 fw-500 align-center">Kronometre Başlamadan önce mesajı :</label>
+                                    <textarea name="timer_text" id="editor3" rows="10" cols="80">
+                                        {% if test_option %}
+                                        {{test_option.timer_text}}
+                                        {% else %}
+                                      
+                                        {% endif %}
+                                   </textarea>
+                                </div>
+   
+                                <div class="form-group">
+                                    <label for="editor4" class="il-gray fs-14 fw-500 align-center">Yayınlanma öncesi mesaj :</label>
+                                    <textarea name="yayinlanma_mesaji" id="editor4" rows="10" cols="80">
+                                     
+                                     {% if test_option %}
+                                        {{yayinlanma_mesaji}}
+                                        {% else %}
+                                       
+                                        {% endif %}
+                                   </textarea>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="editor80" class="il-gray fs-14 fw-500 align-center">Çekiliş öncesi mesaj :</label>
+                                    <textarea name="cekilis_mesaji" id="editor80" rows="10" cols="80">
+                                     
+                                     {% if test_option %}
+                                        {{cekilis_mesaji}}
+                                        {% else %}
+                                       
+                                        {% endif %}
+                                   </textarea>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="editor9" class="il-gray fs-14 fw-500 align-center">Kronometre sonu mesajı :</label>
+                                    <textarea name="after_timer_text" id="editor9" rows="10" cols="80">
+                                    {% if test_option %}
+                                    {{test_option.after_timer_text}}
+                                    {% else %} 
+                                  
+                                    {% endif %}
+                                    </textarea>
+                                 </div>
+                                <script>
+                                      tinymce.init({ 
+                                                    selector: '#editor3',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                                tinymce.init({ 
+                                                    selector: '#editor4',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                                tinymce.init({ 
+                                                    selector: '#editor80',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                                tinymce.init({ 
+                                                    selector: '#editor5',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                                tinymce.init({ 
+                                                    selector: '#editor9',
+                                                     plugins: ['link', 'table'],
+                                                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | link | table | tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol'
+
+                                                });
+                                </script>
+                            </div>
+
+                        </div>
+                    </form>
+                    </div>
+               
+                </div>
+            </div>
+        </form>
+        </div>
+        <div class="modal fade" id="myModal">
+
+            {% csrf_token %}
+            <div class="modal-dialog">
+            <div class="modal-content" id="modal-con">
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="medyaModal2" tabindex="-1" role="dialog" aria-labelledby="medyaModalLabel2" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="medyaModalLabel2">Medyalar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalB">
+                <div id="uploadSection" > 
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <input type="file" name="file" id="fileInput" accept="image/*" onchange="uploadImage()">
+                    </form>
+                    <p>Resim Yükleyiniz ...</p>
+                </div>
+               <div id="medyaList2"></div>
+                <div id="uploadForm" class="media-grid"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary question-image-save " >Ekle</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function uploadImage() {
+        let formData = new FormData();
+        formData.append('file', $('#fileInput')[0].files[0]);
+    
+        $('#uploadSection').show();
+    
+        $.ajax({
+            url: '/panel/upload_media/',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if (response.success) {
+                    let medyaHtml = `<img src="${response.file_path}" alt="Yüklenen Resim" width="200" height="200" class="clickable-image"> `;
+                    $('#medyaList2').prepend('<div class="image-container">' + medyaHtml + '</div>');
+                  
+                } else {
+                    alert('Resim yüklenirken bir hata oluştu.');
+                    $('#uploadSection').hide();
+                }
+            },
+            error: function() {
+                alert('Resim yüklenirken bir hata oluştu.');
+                $('#uploadSection').hide(); 
+            }
+        });
+    }
+    </script>
+
+{%endblock content%}
+
+{%block js%}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.0/tinymce.min.js"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    updateIntervalPost();
+    
+});
+
+function updateIntervalPost() {
+    var rows = $('#aralik-tablo tbody tr');
+    var result = [];
+    var obj = {"interval_min":"0","interval_max":"10","interval_metin":"metinler"};
+console.log(JSON.stringify(obj));
+    rows.each(function() {
+        var row = $(this);
+        var intervalMin = row.find('.interval-skor-min').val();
+        var intervalMax = row.find('.interval-skor-max').val();
+        var intervalMetin = row.find('.interval-metin').val();
+        var gif = row.find('.answer-image-hidden').val();
+
+        result.push({
+            "interval_min": intervalMin,
+            "interval_max": intervalMax,
+            "interval_text": intervalMetin,
+            "interval_image": gif,
+            "interval_redirect_url": "",
+            "interval_redirect_delay": "",
+            "interval_wproduct": "",
+            "interval_keyword": ""
+        });
+    });
+
+    var jsonString = JSON.stringify(result);
+    var correctedString = jsonString.replace(/&quot;/g, '\"');
+    $('input[name="interval-post"]').val(correctedString);
+    console.log("Gizli input güncellendi:", correctedString);
+}
+
+
+function fetchImages() {
+    $.ajax({
+    url: '/panel/fetch_images/',
+    type: 'GET',
+    dataType: 'json', 
+    success: function(data) {
+        console.log("Modal açılıyor...");
+        const htmlContent = data.html;
+        const modalContent = document.getElementById('modal-con');
+        modalContent.innerHTML = htmlContent;
+        bindUploadForm();
+        $('.question-image').remove();
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.error('Hata:', textStatus, errorThrown);
+    }
+});
+    }
+    function toggleSelection(element) {
+        if(element.classList.contains('selected')) {
+            element.classList.remove('selected');
+        } else {
+            element.classList.add('selected');
+        }
+    }
+    let selectedElement = null;
+
+function toggleSelection(element, id) {
+  
+    if (selectedElement) {
+        selectedElement.classList.remove('selected');
+    }
+    
+
+    element.classList.add('selected');
+    selectedElement = element;
+    
+
+    document.getElementById("single-delete-button").setAttribute("data-id", id);
+    console.log("id eklendi .",id);
+    $(document).ready(function() {
+    $('#modal-con').on('click', '#modalFooter .delete-button', function() {
+        var imageId = $(this).data('id');
+        
+        $.ajax({
+            url: '/panel/delete_image/' + imageId + '/',
+            type: 'GET',
+            success: function(data) {
+                if (data.success) {
+                    fetchImages();  
+                }
+            },
+            error: function(error) {
+                console.log("Delete Error:", error);  
+            }
+        });
+
+    });
+});
+
+}
+
+function bindUploadForm() {
+
+        $('#upload-form').submit(function(e) {
+            var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                url: '/panel/upload_image/',
+                type: 'POST',
+                headers: {"X-CSRFToken": csrftoken},
+                data: formData,
+                success: function (data) {
+                    fetchImages();
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+     
+           
+        });
+
+        
+    }
+    $(document).ready(function() {
+        function guncelle() {
+        var trSayisi = $("#selectedTable tbody tr").length;
+        $("#eklenen-sayi").text(trSayisi);
+    }
+
+    guncelle();
+
+    var observer = new MutationObserver(function(mutations) {
+       
+        guncelle();
+    });
+
+    var config = {
+        childList: true, 
+        subtree: true 
+    };
+
+    observer.observe($("#selectedTable tbody")[0], config);
+        updateIntervalPost();
+    $('#datetimepicker9').datetimepicker({
+        format: 'DD/MM/YYYY HH:mm:ss' 
+    });
+   
+});
+
+
+
+
+
+    let offset2 = 0;
+    const limit2 = 5;
+    let isLoading2 = false;
+    
+    function loadData2() {
+    if (isLoading2) return;
+
+    isLoading2 = true;
+
+    let turParam2 = `&tur=RESIM`;
+
+    $.ajax({
+        url: `/panel/medya_ajax/?limit=${limit2}&offset=${offset2}${turParam2}`,
+        method: 'GET',
+        success: function(data) {
+            isLoading2 = false;
+            let medyaData2 = JSON.parse(data);
+            console.log(medyaData2)
+            medyaData2.forEach(item => {
+                $('#medyaList2').addClass('images');
+                let imageUrl = `${item.fields.dosya}`;
+                medyaHtml2 = `<img src="/${imageUrl}" alt="Resim" width="200" height="200" class="clickable-image" style="border: none; cursor: pointer;">`;
+                $('#medyaList2').append('<div class="image-container">' + medyaHtml2 + '</div>');
+            });
+            offset2 += limit2;
+        }
+    });
+}
+
+function alanlar_check_s(){
+    var secilenDegerler = [];
+        
+        // Seçili checkbox'ların değerlerini topla
+        $('.alanlar_check:checked').each(function() {
+            secilenDegerler.push($(this).val());
+        });
+
+        // Değerleri virgülle birleştirip gizli inputa ata
+        $('#alanlar').val(secilenDegerler.join(','));
+}
+
+$(document).ready(function(){
+
+    updateIntervalPost();
+
+    $(".checks").click(function() {
+            var isChecked = $(this).prop("checked");
+            $(this).prop("checked", !isChecked);
+        });
+
+    $('.save-btn-category').on('click', function(){
+      
+        if (!$('.category-input:checked').length) {
+            alert('Seçmediniz!'); 
+        } else {
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+        }
+    });
+    const ustInputs = document.querySelectorAll(".ust-input");
+const altInputs = document.querySelectorAll(".alt-input");
+
+ustInputs.forEach(ustInput => {
+    ustInput.addEventListener("change", function() {
+        const ustId = this.value;
+
+        // Üst kategori seçildiğinde alt kategorilerin value değerini hafızaya alıp boşaltma işlemi
+        altInputs.forEach(altInput => {
+            if (altInput.getAttribute("data-ust-id") == ustId) {
+                if (ustInput.checked) {
+                    altInput.setAttribute("data-original-value", altInput.value);
+                    altInput.value = "";
+                } else {
+                    altInput.value = altInput.getAttribute("data-original-value");
+                }
+                altInput.checked = ustInput.checked;
+            }
+        });
+    });
+});
+
+altInputs.forEach(altInput => {
+    altInput.addEventListener("change", function() {
+        const ustId = this.getAttribute("data-ust-id");
+        const associatedUstInput = document.getElementById("ust-" + ustId);
+
+        // Alt kategoride bir değişiklik olduğunda üst kategorinin durumunu güncelleme işlemi
+        if (!this.checked) {
+            associatedUstInput.checked = false;
+        } else {
+            const allAltForThisUst = document.querySelectorAll(`.alt-input[data-ust-id="${ustId}"]`);
+            let allChecked = true;
+            allAltForThisUst.forEach(input => {
+                if (!input.checked) {
+                    allChecked = false;
+                }
+            });
+            associatedUstInput.checked = allChecked;
+
+            if (associatedUstInput.checked) {
+                allAltForThisUst.forEach(input => {
+                    input.value = input.getAttribute("data-original-value");
+                });
+            }
+        }
+    });
+});
+
+    alanlar_check_s();
+    document.getElementById('kaydetalan').addEventListener('click', function() {
+        $('#alanlarModal').modal('hide');
+});
+$('.alanlar_check_').on('change', alanlar_check_s);
+});
+$(document).on('click', '.form-duzenle-buton', function() {
+    $('#alanlarModal').modal('show');
+});
+
+$(document).on('click', '.clickable-image', function() {
+
+    console.log($(this).attr('src'));
+
+
+    $('.clickable-image').css('border', 'none');  
+    $(this).css('border', '2px solid red');  
+});
+
+// Modal gösterildiğinde
+$('#medyaModal2').on('shown.bs.modal', function () {
+    loadData2();
+});
+
+// Modal içerisinde scroll yapıldığında
+$('#medyaModal2 .modal-body').on('scroll', function() {
+    const nearBottom = $(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight - 5;
+    if(nearBottom) {
+        loadData2();
+    }
+});
+   
+$(document).ready(function() {
+    var formasd = document.getElementById('test-form');
+
+    formasd.addEventListener('submit', function(e) {
+        var fieldNames = ["test-baslik", "test-kategori", "activeInterval", "deactiveInterval", "timer", "pass_score"];
+        var missingFields = [];
+
+        for (var i = 0; i < fieldNames.length; i++) {
+            var element = formasd.querySelector('input[name="' + fieldNames[i] + '"], select[name="' + fieldNames[i] + '"]');
+
+            if (element && !element.value.trim()) {
+                missingFields.push(fieldNames[i]);
+            }
+        }
+
+        if (missingFields.length > 0) {
+            e.preventDefault();
+            alert('Lütfen şu alanları doldurun: ' + missingFields.join(', '));
+        }
+    });
+    const resimYukleInput = document.getElementById('resim-yukle-input');
+    resimYukleInput.addEventListener('click', () => {
+        $('#medyaModal2').modal('show');
+        loadData2();
+    });
+
+    $('#medyaModal2').on('shown.bs.modal', function () {
+    loadData2();
+});
+
+// Modal içerisinde scroll yapıldığında
+$('#medyaModal2 .modal-body').on('scroll', function() {
+    const nearBottom = $(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight - 5;
+    if(nearBottom) {
+        loadData2();
+    }
+});
+
+    var selectedImage = document.getElementById('selected-image');
+    var remove = document.getElementById('remove-image');
+    var img_id_in = document.getElementById('img-id');
+    remove.style.display = 'none';
+    if(selectedImage.getAttribute("data-id") !== "1"){
+        img_id_in.value =  selectedImage.src;
+        remove.style.display = 'block';
+            console.log("çalıştı");
+    }
+    $(document).on('click', '#medyaModal2 .modal-body#modalB #medyaList2 img', function() {
+
+        var selectedImageSrc = $(this).attr('src');
+        console.log("Modal içindeki resme tıklandı.");
+            
+        $(document).on('click', '.question-image-save', function() {
+            
+        var selectedImage1 = document.getElementById('selected-image');
+        var remove = document.getElementById('remove-image');
+        var uploadInput = document.getElementById('resimYukle');
+        var img_id_in = document.getElementById('img-id');
+        img_id_in.value =  selectedImageSrc;
+        uploadInput.style.display = 'none';
+        remove.style.display = 'block';
+        console.log("Seçilen resim: " + selectedImageSrc);
+        $('#selected-image').attr('src', selectedImageSrc);
+        console.log("resim eklendi.");
+        $('#medyaModal2').modal('hide');
+        });
+    });
+   
+    
+$(document).on('click', '#remove-image', function() {
+        var uploadInput = document.getElementById('resimYukle');
+        var remove = document.getElementById('remove-image');
+        console.log("Resim silme butonuna tıklandı.");
+        if (selectedImage.src !== "") {
+
+            remove.style.display = 'none';
+        }else{
+            remove.style.display = 'block';
+        }
+        uploadInput.style.display = 'block';
+        
+        $('#selected-image').attr('src', '');
+
+        $('#img-id').val('');
+    });
+    
+    
+    
+    $(document).ready(function() {
+
+    var selectedQuiz = $("#selectedQuiz").val();
+
+    if(selectedQuiz) {
+        $(".temalar[data-quiz='" + selectedQuiz + "']").addClass("custom-selected-card");
+    }
+
+    $(".temalar").click(function() {
+
+        $(".temalar").removeClass("custom-selected-card");
+
+        $(this).addClass("custom-selected-card");
+
+        var quizValue = $(this).data("quiz");
+        $("#selectedQuiz").val(quizValue);
+    });
+});
+
+    
+});
+$(document).ready(function() {
+
+    $('#aralik-tablo').on('change input', 'input.interval-skor-min, input.interval-skor-max, input.interval-metin, input.answer-image-hidden', updateIntervalPost);
+  
+    $(document).on('click', '.aralik-sil', function() {
+            $(this).closest('tr').remove();
+            updateIntervalPost();
+    });
+    function combineInputs() {
+        const date = document.getElementById("datepicker8").value;
+        const time = document.getElementById("time-picker2").value;
+
+        // AM veya PM kontrolü
+        let [hours, minutes] = time.split(":");
+        minutes = minutes.slice(0,2);
+        if (time.includes("PM") && hours !== "12") {
+            hours = parseInt(hours) + 12;
+        }
+        if (time.includes("AM") && hours === "12") {
+            hours = "00";
+        }
+        console.log("Tarih:", date);
+        console.log("Saat:", time);
+
+        const combinedValue = `${date.split('/').reverse().join('-')} ${hours}:${minutes}:00`;
+        document.getElementById("combined").value = combinedValue;
+    }
+    window.onload = combineInputs;
+    
+    document.getElementById("datepicker8").addEventListener("input", function() {
+    alert("datepicker8 değişti!");
+});
+document.getElementById("time-picker2").addEventListener("input", function() {
+    alert("time-picker2 değişti!");
+});
+
+
+
+    $(document).ready(function() {
+       
+});
+
+
+
+});
+  $(document).ready(function() {
+    
+    window.onload = function() {
+    $('#aralik-ekle').on('click', function() {
+        var rowCount = $('#aralik-tablo tbody tr').length;
+        console.log("aralık eklendi");
+        if(rowCount < 10) {
+            addRow();
+        }
+        $('.answer-control-2').each(function() {
+            if ($(this).val() === '') {
+                $(this).val('0');
+            }
+        });
+    });
+};
+
+
+
+
+  function addRow() {
+        var newRow = `
+        <tr>
+            <td>
+                <div class="userDatatable-content">
+                <input type="number"  class="interval-skor-min form-control ih-medium ip-light radius-xs b-light px-15" placeholder="Skor girin ...">
+            </div>
+            </td>
+            <td>
+                <div class="userDatatable-content">
+                    <input type="number"   class="interval-skor-max form-control ih-medium ip-light radius-xs b-light px-15" placeholder="Skor girin"/>
+                </div>
+            </td>
+            <td>
+                <div class="userDatatable-content">
+                    <input type="text" class="interval-metin form-control ih-medium ip-light radius-xs b-light px-15" placeholder="Metin girin"/>
+                </div>
+            </td>
+            <td id="answer-image-td">
+            <button type="button" class="btn btn-primary answer-image" data-toggle="modal" data-target="#medyaModal2">Medya Ekle
+                                                </button>
+                                                <input type="hidden"  name="answer_image[]" value="1">
+            </td>
+            <td>
+                <div class="userDatatable-content">
+                    <button type="button" class="btn btn-danger aralik-sil" >Sil</button>
+                </div>
+            </td>
+        </tr>`;
+        $('#aralik-tablo tbody').append(newRow);
+        updateIntervalPost();
+    }
+    $(document).on('click', '#medyaModal2 #modalB #medyaList2 img', function() {
+    console.log("Modal içindeki resme tıklandı.");
+    var selectedImageSrc = $(this).attr('src');
+    console.log("Seçilen resim: " + selectedImageSrc);
+       
+    
+    $(document).on('click', '.answer-image-save', function() {
+       
+        addQuestionClass1();
+        removeQuestionClass();
+    console.log("question-image-save butonuna tıklandı.");
+   
+    if (selectedImageSrc && selectedTdElement) {
+        console.log("Resim ve TD seçildi. TD'nin içeriği değiştirilecek.");
+        selectedTdElement.empty(); // td içeriğini temizle
+        selectedTdElement.append(`
+        <div class="row"><img  src="${selectedImageSrc}" width="75">
+            <input type="hidden" class="answer-image-hidden" name="answer_image[]" value="${selectedImageSrc}">
+            <button type="button" class="remove-image btn-xs btn btn-danger">Sil</button></div>
+        `);
+        updateIntervalPost();
+    } else {
+        console.log("Resim veya TD seçilmemiş.");
+    }
+    $('#medyaModal2').modal('hide');
+    $('body').removeClass('modal-open');
+    $('.modal-backdrop').remove();
+});
+});
+
+function removeQuestionClass() {
+    const answerButton = document.querySelector('.question-image-save');
+    if (answerButton) {
+        answerButton.classList.remove('answer-image-save');
+    }
+}
+
+function removeQuestionClass1() {
+    const answerButton = document.querySelector('.answer-image-save');
+    if (answerButton) {
+        answerButton.classList.remove('question-image-save');
+    }
+}
+
+
+function addQuestionClass1() {
+    const answerButton = document.querySelector('.answer-image-save');
+    if (answerButton) {
+        answerButton.classList.add('question-image-save');
+    }
+}
+    $(document).on('click', '#aralik-tablo tr .answer-image', function() {
+        console.log("answer-image butonuna tıklandı.");
+        const answerButton = document.querySelector('.question-image-save');
+    if (answerButton) {
+        console.log("class eklendi")
+        answerButton.classList.add('answer-image-save');
+    }
+    const answerButton1 = document.querySelector('.answer-image-save');
+    if (answerButton1) {
+        answerButton1.classList.remove('question-image-save');
+    }
+        selectedTdElement = $(this).parent();
+        console.log("Seçilen TD elementi: ", selectedTdElement);
+       
+        $('#medyaModal2').modal('show');
+        loadData2();
+    });
+
+    $(document).on('click', '.aralik-sil', function() {
+            $(this).closest('tr').remove();
+            updateIntervalPost();
+    });
+    $(document).on('click', '.aralik-sil-2', function() {
+        e.preventDefault();
+            $(this).closest('tr').remove();
+            updateIntervalPost();
+    });
+    $(document).on('click', '.remove-image', function() {
+        console.log(".remove-image butonuna tıklandı.");
+       
+        const td = $(this).parent();
+        td.find('input[name="answer_image"]').val(1);
+        td.empty();
+        td.append('<button type="button" class="answer-image btn btn-info btn-default btn-rounded">Medya Ekle</button>   <input type="hidden"  name="answer_image[]" value="1">');
+        updateIntervalPost();
+    });
+
+    var selectedData = [];
+    function fetchResults(page = 1) {
+    var query = $("#search-input").val();
+    var selectedCategory = $('#filterByCategory').val();
+    $.ajax({
+        url: '{% url "panel:ajax_search" %}',
+        data: {
+            'q': query,
+            'page': page,
+            'category_id': selectedCategory
+        },
+        dataType: 'json',
+        success: function(data) {
+            $("#myTable tbody").empty();
+            $.each(data.results, function(index, item) {
+                $("#myTable tbody").append('<tr data-id="'+ item.id +'" ><td>'
+                    + item.id + '</td><td>' + item.question + '</td><td>'
+                    + item.kategori +'</td><td>'+ item.tarih +'</td><td><button type="button" class="btn btn-info mr-3 edit-button" data-id="'+ item.id +'">Düzenle</button></td></tr>');
+            });
+            
+            if (data.has_next) {
+                $("#next-btn").prop('disabled', false);
+                $("#next-btn").data('page', data.next_page_number);
+            } else {
+                $("#next-btn").prop('disabled', true);
+            }
+            
+            if (data.has_previous) {
+                $("#prev-btn").prop('disabled', false);
+                $("#prev-btn").data('page', data.previous_page_number);
+            } else {
+                $("#prev-btn").prop('disabled', true);
+            }
+            $("#myTable tbody tr").each(function() {
+        var id = $(this).data('id');
+        if (selectedData.some(function(item) { return item.id === id; })) {
+            $(this).addClass('selected-row');
+            $(this).children('td:first').append('/(Eklendi)');
+        } else {
+            var currentContent = $(this).children('td:first').text();
+var updatedContent = currentContent.replace('/(Eklendi)', ''); 
+$(this).children('td:first').text(updatedContent);
+            $(this).removeClass('selected-row');
+        }
+      
+
+    });
+            
+
+            bindButtonListeners();
+            
+        }
+    });
+
+}
+
+$("#search-input").on("keyup", function() {
+    currentPage = 1;  // Arama kutucuğuna her yeni karakter girildiğinde sayfa numarasını sıfırla
+    fetchResults();
+});
+
+$("#next-btn").click(function() {
+    event.preventDefault();
+    currentPage = $(this).data('page');
+    fetchResults(currentPage);
+});
+$("#filterByCategory").on("change", function() {
+    currentPage = 1;  // Kategori seçildiğinde sayfa numarasını sıfırla
+    fetchResults();
+});
+$("#prev-btn").click(function() {
+    event.preventDefault();
+    currentPage = $(this).data('page');
+    fetchResults(currentPage);
+});
+
+$(document).on('click', '.delete-button-5', function() {
+            $(this).closest('tr').remove();
+            updateIntervalPost();
+            
+    });
+var  a = 0;
+    function updateSelectedTable() {
+        var tbodyIsEmpty = $("#selectedTable tbody").is(':empty');
+        if (tbodyIsEmpty == true) {
+            console.log("tablo içeriği boş");
+            a = 1;
+        }
+        
+        if(a==0 && tbodyIsEmpty == false){
+        $("#selectedTable tbody tr").each(function() {
+        var id = $(this).data("id");
+        var question = $(this).find("td:nth-child(2)").text();
+        var kategori = $(this).find("td:nth-child(3)").text();
+        var tarih = $(this).find("td:nth-child(4)").text();
+        selectedData.push({
+            id: id,
+            question: question,
+            kategori: kategori,
+            tarih: tarih
+        });
+        console.log("tablo içeriği dolu");
+        a=1;
+    });}
+    $("#selectedTable tbody").empty();
+
+        selectedData.forEach(function(item) {
+            $("#selectedTable tbody").append('<tr data-id="'+ item.id +'"><td> <input type="hidden" value="'+item.id+'" name="test-id[]"/>'
+                + item.id + '</td><td>' + item.question + '</td><td>'
+                + item.kategori +'</td><td>'+ item.tarih +'</td><td><a href="/panel/edit-question/'+ item.id +'" target="_blank"><button type="button" class="btn btn-primary" >Düzenle</button></a></td><td><button type="button" class="btn btn-danger delete-button" data-id="'+ item.id +'">Sil</button></td></tr>');
+        });
+        console.log("Güncellenmiş selectedData:", selectedData);
+        document.querySelectorAll('.delete-button').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+        var tr = event.target.closest('tr');
+        if (tr) {
+            var idStr = tr.getAttribute('data-id');
+            var id = parseInt(idStr);  
+            $('#myTable tbody tr[data-id="' + idStr + '"]').removeClass('selected-row');
+            
+            tr.parentNode.removeChild(tr); 
+            var indexToDelete = -1;
+            for (var i = 0; i < selectedData.length; i++) {
+                if (selectedData[i].id === id) {
+                    indexToDelete = i;
+                    break;
+                }
+            }
+            if (indexToDelete > -1) {
+                selectedData.splice(indexToDelete, 1);
+                console.log("nesne silindi");
+            }
+            
+            console.log("Güncellenmiş selectedData:", selectedData);
+        }
+    });
+});
+
+    }
+        
+    $('#myTable tbody').on('click', 'tr', function() {
+        if ($(event.target).closest('td').is('td:last-child')) {
+        console.log("sontd tıklkandı");
+        return;
+    }
+    var id = $(this).data('id');
+    if (selectedData.some(function(item) { return item.id === id; })) {
+        console.log("satır silindi");
+        selectedData = selectedData.filter(function(item) {
+            return item.id !== id;
+        });
+        var currentContent = $(this).children('td:first').text();
+        var updatedContent = currentContent.replace('/(Eklendi)', ''); 
+        $(this).children('td:first').text(updatedContent);
+        $(this).removeClass('selected-row'); 
+    } else {
+      
+        console.log("satır eklendi");
+        selectedData.push({
+            id: id,
+            question: $(this).find('td:nth-child(2)').text(), 
+            kategori: $(this).find('td:nth-child(3)').text(), 
+            tarih: $(this).find('td:nth-child(4)').text() 
+        });
+        $(this).addClass('selected-row'); 
+        $(this).children('td:first').append('/(Eklendi)');
+    }
+
+    updateSelectedTable();
+});
+    function bindButtonListeners() {
+        document.querySelectorAll('.edit-button').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                var id = event.target.getAttribute('data-id');
+                var newTab = window.open("/panel/edit-question/" + id, '_blank');
+                newTab.focus(); 
+            });
+        });
+
+        
+    }
+    fetchResults();
+    updateSelectedTable();
+});
+
+</script>
+{%endblock js%}

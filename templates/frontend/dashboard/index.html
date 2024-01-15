@@ -1,0 +1,813 @@
+{%extends 'frontend/base/index.html'%}
+{%load static%}
+
+{%block css%}
+
+<style>
+  
+    
+    .h3a {
+     text-align: center;
+     color: #fec20b;
+     margin: 0;
+     padding: 5px;
+     font-weight: bold;
+     
+    }
+    
+    
+   
+    
+    .prev, .next {
+     position: absolute;
+     top: 50%;
+     transform: translateY(-50%);
+     background-color: rgba(0, 0, 0, 0.5);
+     color: #fff;
+     border: none;
+     font-size: 24px;
+     padding: 10px;
+     cursor: pointer;
+     z-index: 10;
+     transition: background-color 0.3s;
+    }
+    
+    .prev:hover, .next:hover {
+     background-color: rgba(0, 0, 0, 0.8);
+    }
+    
+    .prev {
+     left: 0;
+    }
+    
+    .next {
+     right: 0;
+    }
+    
+    .indicators {
+     position: absolute;
+     bottom: 10px;
+     left: 50%;
+     transform: translateX(-50%);
+     display: flex;
+     gap: 5px;
+    }
+     
+    .slider {
+    position: relative;
+    width: 100%;
+}
+
+.slides {
+    display: flex;
+    width: 100%;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slides img {
+    width: 500px;
+    height: auto;  /* Yüksekliği otomatik ayarla */
+    object-fit: cover;
+}
+
+.slider-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.slider-container {
+    position: relative;
+    width: 500px;
+    height: auto; /* Yüksekliği otomatik ayarla */
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .slider-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .slider-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .slider-container .slides img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+    .indicators .dot {
+     width: 10px;
+     height: 10px;
+     border-radius: 50%;
+     background-color: #ccc;
+     cursor: pointer;
+    }
+    
+    .indicators .dot.active {
+     background-color: #333;
+    }
+    @media (max-width: 768px) { /* Örnek olarak 768px kullandım. Bu değeri ihtiyacınıza göre değiştirebilirsiniz. */
+    .gallery-item {
+        width: 100% !important; /* Kutunun genişliğini tam ekran yap */
+        margin: 10px 0; /* Aralarında biraz boşluk bırak */
+    }
+   
+}
+@media (max-width: 768px) {
+    .mobil-buton {
+        display: block;
+    }
+}
+
+.quiz-button {
+    color: rgba(255, 255, 255, 1.00); 
+    background-color: rgba(0,0,0,0.7); 
+    padding: 10px 20px; 
+    font-family: 'Patrick Hand', cursive; 
+    border: none; 
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;  /* Renk değişikliklerinin yumuşak bir geçişle olmasını sağlar */
+}
+.gallery-icon {
+    position: relative; /* Bu, içerisindeki mutlak konumlandırılmış öğeler için referans olacaktır */
+    
+}
+
+.image-text {
+    position: absolute; /* Bu sayede resmin üzerine yerleştirilebilir */
+    bottom: 0; /* Resmin altına hizalanacak */
+    left: 0;
+    width: 100%; /* Genişliği resimle aynı olacak */
+    background-color: rgba(255, 255, 255, 0.5);
+    color: black; 
+    padding: 5px 10px; /* Yazının etrafında biraz boşluk */
+    text-align: center; /* Yazıyı ortala */
+    font-weight: bold;
+    height: 50px;
+    line-height: 50px;
+}
+.quiz-start:hover {
+    background-color: white;
+    color: deepskyblue;
+}
+
+.quiz-results:hover {
+    background-color: darkred;
+    color: white;
+}
+.main-nav-container {
+    position: relative; /* veya ihtiyacınıza bağlı olarak 'fixed' veya 'absolute' */
+    z-index: 9999;
+}
+
+#adModal {
+        width:500px;
+        height: 500px;
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+    .modal-content {
+        background-color: #ffffff;
+        margin: 15% auto;
+        padding: 20px;
+        width: 70%;
+        position: relative;
+    }
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 9999;
+    display: flex;       /* Flexbox kullanarak içerikleri ortalamak için. */
+    align-items: center; /* Dikeyde ortalar. */
+    justify-content: center; /* Yatayda ortalar. */
+}
+
+.cws_button.mobil-buton {
+    display: none; /* Masaüstü görünümde butonu gizle */
+}
+@media (max-width: 768px) {
+    .cws_button.mobil-buton {
+        display: block; /* Mobil görünümde butonu göster */
+    }
+}
+.popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 500px;
+    background-color: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.popup-image {
+    max-width: 100%;
+    max-height: 80%;
+    display: block;
+    margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+    .popup-content {
+        width: 100%; /* Genişliği tam ekran yap */
+        height: auto; /* Yüksekliği içeriğe bağlı olarak otomatik ayarla */
+        left: 0%; /* Sol pozisyonunu sıfırla */
+        transform: translateY(-50%); /* Yatayda herhangi bir kaydırma yapmadan sadece dikeyde ortala */
+        padding: 10px; /* Eğer isterseniz mobilde padding'i azaltabilirsiniz */
+    }
+}
+.popup-close {
+    display: block;
+    margin: 15px auto 0;
+    padding: 5px 15px;
+    background-color: red;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+    
+     </style>
+
+{%endblock css%}
+
+{%block title%} <title>QuizVar</title> {%endblock title%}
+
+{%block slider%}
+
+<div class='slider_vs_menu'>
+{%include 'frontend/base/inc/menu.html'%}
+<div id="rev_slider_1_1_wrapper" class="rev_slider_wrapper fullwidthbanner-container">
+    <!-- START REVOLUTION SLIDER 5.0.9 fullwidth mode -->
+    <div id="rev_slider_1_1" class="rev_slider fullwidthabanner" style="display:none;" data-version="5.0.9">
+        <ul>
+            <!-- SLIDE  -->
+            <li data-index="rs-1" data-transition="random,fade" data-slotamount="7,7" data-easein="default,default" data-easeout="default,default" data-masterspeed="300,500" data-thumb="{%static 'frontend/pic/2015/09/dots-pattern-100x50.png'%}" data-rotate="0,0" data-saveperformance="off" data-title="Slide" data-description="">
+                <!-- MAIN IMAGE -->
+                <img src="{%static 'frontend/img/dots-pattern.png'%}" alt="" width="43" height="24" data-bgposition="center center" data-bgfit="normal" data-bgrepeat="repeat" data-bgparallax="1" class="rev-slidebg" data-no-retina>
+                <!-- LAYERS -->
+                <!-- LAYER NR. 1 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-0" id="slide-1-layer-23" data-x="center" data-hoffset="" data-y="center" data-voffset="" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="990" data-responsive_offset="on" style="z-index: 5;"><img src="{%static 'frontend/pic/revslider/general/sunshine_home1.png'%}" alt="" width="1920" height="650" data-ww="1920px" data-hh="650px" data-no-retina>
+                </div>
+                <!-- LAYER NR. 2 -->
+                <div class="tp-caption home-h2   tp-resizeme rs-parallaxlevel-9" id="slide-1-layer-1" data-x="30" data-y="130" data-width="['auto']" data-height="['auto']" data-transform_idle="o:1;" data-transform_in="y:50px;z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="500" data-splitin="none" data-splitout="none" data-responsive_offset="on" style="z-index: 6; white-space: nowrap;">
+                    Bilgini Test Et,
+
+                </div>
+                <!-- LAYER NR. 3 -->
+                <div class="tp-caption home-h1   tp-resizeme rs-parallaxlevel-9" id="slide-1-layer-2" data-x="30" data-y="200" data-width="['auto']" data-height="['auto']" data-transform_idle="o:1;" data-transform_in="y:50px;z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="500" data-splitin="none" data-splitout="none" data-responsive_offset="on" style="z-index: 7; white-space: nowrap;">
+                    Şansına Güven,
+                </div>
+                <div class="tp-caption home-h1   tp-resizeme rs-parallaxlevel-9" id="slide-1-layer-3" data-x="30" data-y="290" data-width="['auto']" data-height="['auto']" data-transform_idle="o:1;" data-transform_in="y:50px;z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="500" data-splitin="none" data-splitout="none" data-responsive_offset="on" style="z-index: 8; white-space: nowrap;">
+                    Hediyeni Al!
+                </div>
+                <!-- LAYER NR. 4 -->
+                <div class="tp-caption home-general-font   tp-resizeme rs-parallaxlevel-9 none-visible-mobile" id="slide-1-layer-22" data-x="30" data-y="345" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="y:50px;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="500" data-responsive_offset="on" style="z-index: 8;border-color:rgba(0, 0, 0, 1.00);"><img src="{%static 'frontend/pic/revslider/general/slider_devider.png'%}" alt="" width="300" height="8" data-ww="300px" data-hh="8px" data-no-retina>
+                   
+                </div>
+                <!-- LAYER NR. 5 --> 
+                <div class="tp-caption home-general-font   tp-resizeme rs-parallaxlevel-9 none-visible-mobile" id="slide-1-layer-3" data-x="30" data-y="385" data-width="['auto']" data-height="['auto']" data-transform_idle="o:1;" data-transform_in="y:50px;z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="500" data-splitin="none" data-splitout="none" data-responsive_offset="on" style="z-index: 9; white-space: nowrap; color: rgba(255, 255, 255, 1.00);font-family:Patrick Hand;border-color:rgba(0, 0, 0, 1.00);">
+                    Bilgiyle Eğlenin, QuizVar'la Öğrenin!
+
+                </div>
+                <div class="tp-caption home-general-font tp-resizeme rs-parallaxlevel-9 none-visible-mobile" data-x="30" data-y="445" data-transform_idle="o:1;" data-transform_in="y:50px;z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="600" data-splitin="none" data-splitout="none" data-responsive_offset="on" style="z-index: 10; white-space: nowrap;">
+                    <button class="quiz-button quiz-start" onclick="scrollDown()">Sınıfını Seç</button> 
+                   <a href="/sonuc-siniflar"> <button class="quiz-button quiz-results">Quiz Sonuçları</button>   </a>   </div>
+                
+                
+             
+                <!-- LAYER NR. 7 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-10" id="slide-1-layer-5" data-x="-36" data-y="589" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="opacity:0;s:290;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="500" data-responsive_offset="on" style="z-index: 11;"><img src="{%static 'frontend/pic/revslider/general/grass.png'%}" alt="" width="1469" height="162" data-ww="1484px" data-hh="130px" data-no-retina>
+                </div>
+                <!-- LAYER NR. 8 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-8" id="slide-1-layer-7" data-x="761" data-y="186" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="500" data-responsive_offset="on" style="z-index: 12;"><img src="https://quizvar.com/medya_dosyalari/slider1back_SUFH8H7.png" alt="" width="421" height="424" data-ww="398px" data-hh="424px" data-no-retina>
+                </div>
+                <!-- LAYER NR. 9 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-9" id="slide-1-layer-6" data-x="362" data-y="181" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="570" data-responsive_offset="on" style="z-index: 13;"><img src="https://quizvar.com/medya_dosyalari/slider1_3zfe78G.png" alt="" width="662" height="484" data-ww="662px" data-hh="484px" data-no-retina>
+                </div>
+                <!-- LAYER NR. 10 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-8" id="slide-1-layer-9" data-x="325" data-y="132" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="x:0;y:0;z:0;rX:0;rY:0;rZ:0;sX:0;sY:0;skX:0;skY:0;opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="990" data-responsive_offset="on" style="z-index: 14;">
+                    <div class="rs-looped rs-wave" data-speed="9" data-angle="0" data-radius="5px" data-origin="50% 50%"><img src="{%static 'frontend/pic/revslider/general/cloud-1.png'%}" alt="" width="91" height="37" data-ww="91px" data-hh="37px" data-no-retina>
+                    </div>
+                </div>
+                <!-- LAYER NR. 11 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-7" id="slide-1-layer-10" data-x="-117" data-y="311" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="x:0;y:0;z:0;rX:0;rY:0;rZ:0;sX:0;sY:0;skX:0;skY:0;opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="x:0;y:0;z:0;rX:0;rY:0;rZ:0;sX:0;sY:0;skX:0;skY:0;opacity:0;s:300;s:300;" data-start="580" data-responsive_offset="on" style="z-index: 15;">
+                    <div class="rs-looped rs-wave" data-speed="9" data-angle="0" data-radius="5px" data-origin="50% 10%"><img src="{%static 'frontend/pic/revslider/general/cloud-2.png'%}" alt="" width="90" height="40" data-ww="90px" data-hh="40px" data-no-retina>
+                    </div>
+                </div>
+                <!-- LAYER NR. 12 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-8" id="slide-1-layer-13" data-x="1122" data-y="69" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="x:0;y:0;z:0;rX:0;rY:0;rZ:0;sX:0;sY:0;skX:0;skY:0;opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="790" data-responsive_offset="on" style="z-index: 16;">
+                    <div class="rs-looped rs-wave" data-speed="11" data-angle="0" data-radius="5px" data-origin="50% 50%"><img src="{%static 'frontend/pic/revslider/general/cloud-5.png'%}" alt="" width="180" height="72" data-ww="180px" data-hh="72px" data-no-retina>
+                    </div>
+                </div>
+                <!-- LAYER NR. 13 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-8" id="slide-1-layer-14" data-x="-127" data-y="70" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="x:0;y:0;z:0;rX:0;rY:0;rZ:0;sX:0;sY:0;skX:0;skY:0;opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="710" data-responsive_offset="on" style="z-index: 17;">
+                    <div class="rs-looped rs-wave" data-speed="9" data-angle="0" data-radius="5px" data-origin="50% 10%"><img src="{%static 'frontend/pic/revslider/general/cloud-6.png'%}" alt="" width="180" height="72" data-ww="180px" data-hh="72px" data-no-retina>
+                    </div>
+                </div>
+                <!-- LAYER NR. 14 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-6" id="slide-1-layer-18" data-x="898" data-y="50" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="x:0;y:0;z:0;rX:0;rY:0;rZ:0;sX:0;sY:0;skX:0;skY:0;opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="590" data-responsive_offset="on" style="z-index: 18;">
+                    <div class="rs-looped rs-wave" data-speed="9" data-angle="0" data-radius="10" data-origin="50% 50%"><img src="{%static 'frontend/pic/revslider/general/cloud-2.png'%}" alt="" width="90" height="40" data-ww="90px" data-hh="40px" data-no-retina>
+                    </div>
+                </div>
+                <!-- LAYER NR. 15 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-8" id="slide-1-layer-19" data-x="1259" data-y="528" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="x:0;y:0;z:0;rX:0;rY:0;rZ:0;sX:0;sY:0;skX:0;skY:0;opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="920" data-responsive_offset="on" style="z-index: 19;">
+                    <div class="rs-looped rs-wave" data-speed="12" data-angle="0" data-radius="10" data-origin="50% 50%"><img src="{%static 'frontend/pic/revslider/general/cloud-1.png'%}" alt="" width="91" height="37" data-ww="91px" data-hh="37px" data-no-retina>
+                    </div>
+                </div>
+                <!-- LAYER NR. 16 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-9" id="slide-1-layer-20" data-x="-243" data-y="478" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="x:0;y:0;z:0;rX:0;rY:0;rZ:0;sX:0;sY:0;skX:0;skY:0;opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="780" data-responsive_offset="on" style="z-index: 20;">
+                    <div class="rs-looped rs-wave" data-speed="11" data-angle="0" data-radius="5px" data-origin="50% 1%"><img src="{%static 'frontend/pic/revslider/general/cloud-3.png'%}" alt="" width="271" height="108" data-ww="271px" data-hh="108px" data-no-retina>
+                    </div>
+                </div>
+                <!-- LAYER NR. 17 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-8" id="slide-1-layer-21" data-x="1150" data-y="328" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="x:0;y:0;z:0;rX:0;rY:0;rZ:0;sX:0;sY:0;skX:0;skY:0;opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="990" data-responsive_offset="on" style="z-index: 21;">
+                    <div class="rs-looped rs-wave" data-speed="11" data-angle="0" data-radius="5px" data-origin="50% 50%"><img src="{%static 'frontend/pic/revslider/general/cloud-4.png'%}" alt="" width="271" height="108" data-ww="271px" data-hh="108px" data-no-retina>
+                    </div>
+                </div>
+            </li>
+            <!-- SLIDE  -->
+            <li data-index="rs-2" data-transition="random,fade" data-slotamount="7,7" data-easein="default,default" data-easeout="default,default" data-masterspeed="300,500" data-thumb="{%static 'frontend/pic/2015/09/dots-pattern-100x50.png'%}" data-rotate="0,0" data-saveperformance="off" data-title="Slide" data-description="">
+                <!-- MAIN IMAGE -->
+                <img src="{%static 'frontend/img/dots-pattern.png'%}" alt="" width="43" height="24" data-bgposition="center center" data-bgfit="normal" data-bgrepeat="repeat" data-bgparallax="1" class="rev-slidebg" data-no-retina>
+                <!-- LAYERS -->
+                <!-- LAYER NR. 1 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-0" id="slide-2-layer-24" data-x="center" data-hoffset="-340" data-y="center" data-voffset="" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="570" data-responsive_offset="on" style="z-index: 5;"><img src="{%static 'frontend/pic/revslider/general/sunshine_home1.png'%}" alt="" width="1920" height="650" data-ww="1920px" data-hh="650px" data-no-retina>
+                </div>
+               
+                <!-- LAYER NR. 3 -->
+                <div class="tp-caption home-h2   tp-resizeme rs-parallaxlevel-9" id="slide-2-layer-1" data-x="450" data-y="195" data-width="['auto']" data-height="['auto']" data-transform_idle="o:1;" data-transform_in="y:50px;z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="500" data-splitin="none" data-splitout="none" data-responsive_offset="on" style="z-index: 7; white-space: nowrap;">
+                    Her Soruda 
+                </div>
+                <!-- LAYER NR. 4 -->
+                <div class="tp-caption home-h1   tp-resizeme rs-parallaxlevel-9" id="slide-2-layer-2" data-x="450" data-y="260" data-width="['auto']" data-height="['auto']" data-transform_idle="o:1;" data-transform_in="y:50px;z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="500" data-splitin="none" data-splitout="none" data-responsive_offset="on" style="z-index: 8; white-space: nowrap;">
+                    Yeni Bir Macera!
+                </div>
+                <!-- LAYER NR. 5 -->
+                <div class="tp-caption home-general-font   tp-resizeme rs-parallaxlevel-9 none-visible-mobile" id="slide-2-layer-22" data-x="450" data-y="330" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="y:50px;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="500" data-responsive_offset="on" style="z-index: 9;border-color:rgba(0, 0, 0, 1.00);"><img src="{%static 'frontend/pic/revslider/general/slider_devider.png'%}" alt="" width="300" height="8" data-ww="300px" data-hh="8px" data-no-retina>
+                </div>
+                <!-- LAYER NR. 6 -->
+                <div class="tp-caption home-general-font   tp-resizeme rs-parallaxlevel-9 none-visible-mobile" id="slide-2-layer-4" data-x="450" data-y="360" data-width="['338']" data-height="['106']" data-transform_idle="o:1;" data-transform_in="y:50px;z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="500" data-splitin="none" data-splitout="none" data-responsive_offset="on" style="z-index: 9999; min-width: 338px; max-width: 338px; max-width: 106px; max-width: 106px; white-space: normal; color: rgba(255, 255, 255, 1.00);font-family:Patrick Hand;border-color:rgba(0, 0, 0, 1.00);">
+                    Bilginle Parla, QuizVar'la Kazan!
+                </div>
+                <div class="tp-caption home-general-font tp-resizeme rs-parallaxlevel-9 none-visible-mobile" data-x="450" data-y="445" data-transform_idle="o:1;" data-transform_in="y:50px;z:0;rX:0;rY:0;rZ:0;sX:0.9;sY:0.9;skX:0;skY:0;opacity:0;s:1500;e:Power3.easeInOut;" data-transform_out="auto:auto;s:300;" data-start="600" data-splitin="none" data-splitout="none" data-responsive_offset="on" style="z-index: 10; white-space: nowrap;">
+                    <button class="quiz-button quiz-start" onclick="scrollDown()">Sınıfını Seç</button> 
+                   <a href="/sonuc-siniflar"> <button class="quiz-button quiz-results">Quiz Sonuçları</button>   </a>   </div>
+                <!-- LAYER NR. 7 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-8" id="slide-2-layer-7" data-x="right" data-hoffset="10" data-y="bottom" data-voffset="-56" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="500" data-responsive_offset="on" style="z-index: 0;"><img src="https://quizvar.com/medya_dosyalari/slider2s.png" alt="" width="384" height="538" data-ww="384px" data-hh="538px" data-no-retina>
+                </div>
+                <!-- LAYER NR. 8 -->
+                <div class="tp-caption   tp-resizeme rs-parallaxlevel-9" id="slide-2-layer-6" data-x="10" data-y="181" data-width="['none','none','none','none']" data-height="['none','none','none','none']" data-transform_idle="o:1;" data-transform_in="opacity:0;s:300;e:Power2.easeInOut;" data-transform_out="opacity:0;s:300;s:300;" data-start="500" data-responsive_offset="on" style="z-index: 12;"><img src="https://quizvar.com/medya_dosyalari/slider2.png" alt="" width="459" height="501" data-ww="459px" data-hh="501px" data-no-retina>
+                </div>
+            </li>
+           
+        </ul>
+        <div class="tp-static-layers" >
+        </div>
+        <div class="tp-bannertimer tp-bottom" style="visibility: hidden !important;"></div>
+    </div>
+</div>
+
+</div>
+{%endblock slider%}
+
+{%block main%}
+
+<div class="cloud_wrapper">
+    <canvas class="white_cloud"></canvas>
+</div>
+<div id="main" class="site-main">
+    <div class="page_content">
+        <!-- pattern conatainer / -->
+        
+        <main>
+            {%if popup.durum == 'on' %}
+<div class="popup" id="popup">
+    <div class="popup-content">
+        <img src="{{popup.resim}}" alt="Göstermek istediğiniz resim" class="popup-image">
+        <button class="popup-close" onclick="closePopup()">Kapat</button>
+    </div>
+</div>
+{%endif%}
+            <div class='grid_row clearfix mobil-buton' style='padding-top: 30px;  '>
+                <div class='grid_col grid_col_12'>
+                   
+                    <div class='ce clearfix'>
+                        <div>
+                            <p style="text-align: center;"> 
+                                <a href='#' class='cws_button mobil-buton customized quiz-button quiz-start'    onclick="scrollDown()" data-bg_hover_color='#fec20b' data-bg_color='#3eb2cf' data-text_color='#fff'>Şimdi Sınıfını Seç !</a> 
+                          
+                           
+                        </div>
+                    </div>
+                  
+                </div>
+                <div class='grid_col grid_col_12'>
+                   
+                    <div class='ce clearfix'>
+                        <div>
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                            crossorigin="anonymous"></script>
+                       <!-- quizvarYeni banner ad -->
+                       <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-client="ca-pub-4930971127953627"
+                            data-ad-slot="9612517786"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"></ins>
+                       <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                       </script>
+                        </div>
+                    </div>
+                  
+                </div>
+                
+            </div>
+           
+            <div class='grid_row clearfix' style='padding-top: 30px;'>
+                <div class='grid_col grid_col_4'>
+                    <!-- about us -->
+                    <div class='ce clearfix'>
+                        <div>
+                            <h3 class="ce_title">{{site_ayar.text_baslik}}</h3>
+                            <p>{{site_ayar.text}}</p>
+                            
+                            <a href='https://instagram.com' class='cws_button small'>İnstagram'dan Takip Et</a>
+                        </div>
+                    </div>
+                    <!-- / about us -->
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div><img class="noborder alignnone image-type size-full" src="{{site_ayar.anasayfa_resim}}" alt="kid_playing" width="385" height="373" /></div>
+                    </div>
+                </div>
+                <div class='grid_col grid_col_4'>
+                    <div class='ce clearfix'>
+                        <div><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                            crossorigin="anonymous"></script>
+                       <!-- quizvar Yeni kare ad -->
+                       <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-client="ca-pub-4930971127953627"
+                            data-ad-slot="4360191107"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"></ins>
+                       <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                       </script></div></div>
+                </div>
+            </div>
+            
+            <div class='grid_row clearfix' style='padding-top: 30px;'>
+                <div class='grid_col grid_col_12'>
+                    <!-- about us -->
+                    <div class='ce clearfix'>
+                        <div>
+                            <div class="slider-wrapper">
+                                <div class="slider-container">
+                                    <!-- İlk Slider -->
+                                    <p class="h3a">{{site_ayar.sol_slider}}</p>
+                                    <div class="slider slides">
+                                        {%for i in slider%}
+                                        {%if i.tip == 'sol'%}
+                                        <img src="{{i.resim}}" alt="asd 2">
+                                        {%endif%}
+                                        {%endfor%}
+                                        
+                                    </div>
+                                    <button class="prev">&#10094;</button>
+                                    <button class="next">&#10095;</button>
+                                    <div class="indicators"></div>
+                                </div>
+                            
+                                <div class="slider-container">
+                                    <!-- İkinci Slider -->
+                                    <p class="h3a">{{site_ayar.sag_slider}}</p>
+                                    <div class="slider slides">
+                                        {%for i in slider%}
+                                        {%if i.tip == 'sag'%}
+                                        <img src="{{i.resim}}" alt="asd 2">
+                                        {%endif%}
+                                        {%endfor%}
+                                    </div>
+                                    <button class="prev">&#10094;</button>
+                                    <button class="next">&#10095;</button>
+                                    <div class="indicators"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- / about us -->
+                </div>
+                
+            </div>
+            
+            <div class='grid_row clearfix' style='padding-bottom: 50px;'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                            crossorigin="anonymous"></script>
+                       <!-- slider altı -->
+                       <ins class="adsbygoogle"
+                            style="display:block"
+                            data-ad-client="ca-pub-4930971127953627"
+                            data-ad-slot="4144568680"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"></ins>
+                       <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                       </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- / divider -->
+            <!-- section -->
+            <div class='grid_row clearfix' style='padding-top: 0px;'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <h3 class="ce_title" style="text-align: center;"><span >Sınıf Seçin ve</span><br /> Testi Başlatın</h3>
+                              
+                            <p style="text-align: center;"> <a href='/sonuc-siniflar' class='cws_button customized' data-bg_hover_color='#fec20b' data-bg_color='#3eb2cf' data-text_color='#fff'>Sınav Sonuçları</a> <a href='/sonuc-siniflar' class='cws_button'>Çekiliş Sonuçları</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- / section -->
+            <!-- section gallery -->
+            <div class='grid_row clearfix'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <div id='gallery-1' class='gallery galleryid-2288 gallery-columns-3 gallery-size-large'>
+                                <!-- gallery item -->
+                               
+                                <!-- / galery item -->
+                                <!-- galery item -->
+                                <div class='gallery-item'>
+                                    <div class='gallery-icon landscape'>
+                                        <a href="/ilkokul/2-snf/"></a>
+                                        <img width="1024" height="1024" src="/medya_dosyalari/2.png" class="attachment-large" alt="portfolio_4" />
+                                         </div>
+                                </div>
+                                <!-- / galery item -->
+                                <!-- galery item -->
+                                <div class='gallery-item'>
+                                    <div class='gallery-icon landscape'>
+                                        <a href="/ilkokul/3-snf/">
+                                        <img width="1024" height="1024" src="/medya_dosyalari/3.png" class="attachment-large" alt="portfolio_5" />
+                                    </a>  </div>
+                                </div>
+  <!-- gallery item -->
+                          <div class='gallery-item'>
+                            <div class='gallery-icon landscape'>
+                                <a href="/ilkokul/4-snf/">
+                                <img width="1024" height="1024" src="/medya_dosyalari/4.png" class="attachment-large" alt="portfolio_3" />
+                            </a>  </div>
+                        </div>
+                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='grid_row clearfix'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+     crossorigin="anonymous"></script>
+<!-- sınıf arası -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-4930971127953627"
+     data-ad-slot="1518405343"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                       
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='grid_row clearfix'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <div id='gallery-1' class='gallery galleryid-2288 gallery-columns-3 gallery-size-large'>
+                              
+                                <!-- / galery item -->
+                                <!-- galery item -->
+                                <div class='gallery-item'>
+                                    <div class='gallery-icon landscape'>
+                                        <a href="/ilkokul/5-snf/">
+                                        <img width="1024" height="1024" src="/medya_dosyalari/5.png" class="attachment-large" alt="portfolio_4" />
+                                    </a>  </div>
+                                </div>
+                                <!-- / galery item -->
+                                <!-- galery item -->
+                                <div class='gallery-item'>
+                                    <div class='gallery-icon landscape'>
+                                        <a href="/ilkokul/6-snf/">
+                                        <img width="1024" height="1024" src="/medya_dosyalari/6.png" class="attachment-large" alt="portfolio_5" />
+                                    </a>   </div>
+                                </div>
+                                <div class='gallery-item'>
+                                    <div class='gallery-icon landscape'>
+                                        <a href="/ilkokul/7-snf/">
+                                        <img width="1024" height="1024" src="/medya_dosyalari/7.png" class="attachment-large" alt="portfolio_3" />
+                                    </a>  </div>
+                                </div>
+                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+           
+            <div class='grid_row clearfix'>
+                <div class='grid_col grid_col_12'>
+                    <div class='ce clearfix'>
+                        <div>
+                            <div id='gallery-1' class='gallery galleryid-2288 gallery-columns-3 gallery-size-large'>
+                                <div class='gallery-item'>
+                                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                                    crossorigin="anonymous"></script>
+                               <!-- 8 sol -->
+                               <ins class="adsbygoogle"
+                                    style="display:block"
+                                    data-ad-client="ca-pub-4930971127953627"
+                                    data-ad-slot="4603733687"
+                                    data-ad-format="auto"
+                                    data-full-width-responsive="true"></ins>
+                               <script>
+                                    (adsbygoogle = window.adsbygoogle || []).push({});
+                               </script>
+                                </div>
+                                <div class='gallery-item'>
+                                    <div class='gallery-icon landscape'>
+                                        <a href="/ilkokul/8-snf/">
+                                        <img width="1024" height="1024" src="/medya_dosyalari/8.png" class="attachment-large" alt="portfolio_4" />
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class='gallery-item'>
+                                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4930971127953627"
+                                    crossorigin="anonymous"></script>
+                               <!-- 8 sag -->
+                               <ins class="adsbygoogle"
+                                    style="display:block"
+                                    data-ad-client="ca-pub-4930971127953627"
+                                    data-ad-slot="4879065851"
+                                    data-ad-format="auto"
+                                    data-full-width-responsive="true"></ins>
+                               <script>
+                                    (adsbygoogle = window.adsbygoogle || []).push({});
+                               </script>
+                                </div>
+
+                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- / gallery section -->
+            <!-- section -->
+            
+        </main>
+        <!-- pettaren container / -->
+        <div class='right-pattern pattern pattern-2'></div>
+        <!-- footer image container / -->
+        <div class="footer_image"></div>
+    </div>
+    <!-- svg filter -->
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="0" style='display:none;'>
+        <defs>
+            <filter id="goo">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+                <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo" />
+                <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+            </filter>
+        </defs>
+    </svg>
+    <!-- / svg filter -->
+</div>
+{%endblock main%}
+
+{%block js%}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const popup = document.getElementById('popup');
+    if (popup) {
+        popup.style.display = 'block';
+    }
+});
+function closePopup() {
+    const popup = document.getElementById('popup');
+    popup.style.display = 'none';
+}
+    function initSlider(containerSelector) {
+    const container = document.querySelector(containerSelector);
+    const slides = container.querySelectorAll('.slides img');
+    const prev = container.querySelector('.prev');
+    const next = container.querySelector('.next');
+    const indicators = container.querySelector('.indicators');
+    let currentSlide = 0;
+
+    slides.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        dot.addEventListener('click', () => {
+            goToSlide(index);
+        });
+        indicators.appendChild(dot);
+    });
+
+    function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        const offset = -slideIndex * 500;
+        container.querySelector('.slides').style.transform = `translateX(${offset}px)`;
+
+        const dots = container.querySelectorAll('.dot');
+        dots.forEach(dot => dot.classList.remove('active'));
+        dots[slideIndex].classList.add('active');
+    }
+
+    next.addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % slides.length;
+        goToSlide(currentSlide);
+    });
+
+    prev.addEventListener('click', () => {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        goToSlide(currentSlide);
+    });
+
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % slides.length;
+        goToSlide(currentSlide);
+    }, 3000);
+
+    goToSlide(currentSlide);
+}
+
+initSlider('.slider-container:nth-child(1)');
+initSlider('.slider-container:nth-child(2)');
+function scrollDown() {
+    let scrollPosition = window.scrollY || window.pageYOffset;
+    let scrollTarget;
+
+    // Ekran genişliği kontrolü
+    if (window.innerWidth <= 768) {
+        // Mobil cihazlar için
+        scrollTarget = scrollPosition + 3300;
+    } else {
+        // Tablet, masaüstü vb. için
+        scrollTarget = scrollPosition + 2700;
+    }
+
+    window.scrollTo({
+        top: scrollTarget,
+        behavior: 'smooth'
+    });
+}
+
+     
+         </script>
+{%endblock js%}

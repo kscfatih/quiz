@@ -1,0 +1,224 @@
+{%extends 'yonetim/base/index.html'%}
+
+{%block content%}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert-big alert alert-success" role="alert">
+            <div class="alert-content">
+                <h6 class="alert-heading">Success</h6>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="breadcrumb-main">
+            <h4 class="text-capitalize breadcrumb-title">Kullanıcı formu için alan ekleyin </h4>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-default card-md mb-4">
+            <div class="card-header">
+                <button class="btn btn-primary"  onclick="ekle('text')">+ Text ekle</button>
+                <button class="btn btn-primary"  data-toggle="modal" data-target="#selectModal" onclick="ekle('select')" >+ Select ekle</button>
+            </div>
+            <div class="card-body py-md-25">
+                <form method = "POST">
+                    
+                    {% csrf_token %}
+                    <input type="hidden" name="select_data" id="selectData">
+                    <div class="row">
+                        <div class="col-md-12" id="alanlar">
+                            
+                        </div>
+                        <div class="modal fade" id="selectModal" tabindex="-1" role="dialog" aria-labelledby="selectModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="selectModalLabel">Option Ekle</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <label> Select Adı: </label>
+                                  <input class="form-control ih-medium ip-light radius-xs b-light px-15" type="text" id="selectName" placeholder="Select adı">
+                                  <br>
+                                  <label> Option Değeri: </label>
+                                  <input class="form-control ih-medium ip-light radius-xs b-light px-15" type="text" id="optionValue" placeholder="Option değeri">
+                                  <button class="btn btn-primary" type="button" onclick="addOption()">Option Ekle</button>
+                                  <div id="optionsList"></div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                                  <button type="button" class="btn btn-primary" onclick="finishSelect()">Tamamla</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                    <button class="btn btn-primary"  type="submit" > Kayıt Et</button>
+                </form>
+                
+               
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-default card-md mb-4">
+            <div class="card-header">
+               
+
+                <table class="table mb-0" id="myTable">
+                    <thead>
+                        <tr class="userDatatable-header">
+                            <th>
+                                <span >Tip</span>
+                            </th>
+                            <th>
+                                <span >İsim</span>
+                            </th>
+                            
+                            <th>
+                                <span >Seçenekler</span>
+                            </th>
+                            
+                            <th>
+                                <span >Aksiyon</span>
+                            </th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        {% for i in alanlar %}
+                        <tr>
+                            <td>
+                            
+                            {{i.type}}
+                            </td>
+                            <td>
+                               
+                                {{i.name}}
+                                
+                            </td>
+                           
+                        <td>
+                            {{i.options}}
+                   
+                        
+                    </td>
+                            <td>
+                                
+                                <a href ="/panel/alan_sil/{{i.id}}" class="btn btn-secondary"> SİL </a>
+                            </td>
+                            
+                        </tr>
+
+                        {% empty %}
+    <tr>
+        <td colspan="4">Hiç veri bulunamadı.</td>
+    </tr>
+                        {% endfor %}
+
+
+
+                        
+                    </tbody>
+                </table>
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{%endblock content%}
+
+{%block js%}
+<script>
+     let currentSelect = null;
+
+function ekle(tip) {
+    if (tip === 'text') {
+        let content = $('<div class="form-group"></div>');
+        let label = $('<label class="il-gray fs-14 fw-500 align-center"></label>').text('Input Adı :');
+        let input = $('<input type="text" name ="isim[]" class="form-control ih-medium ip-light radius-xs b-light px-15">');
+        let deleteButton = $('<button class="btn btn-danger">Sil</button>').click(function() {
+            content.remove();
+        });
+
+        content.append(label).append(input).append(deleteButton);
+        $('#alanlar').append(content);
+    } else if (tip === 'select') {
+        currentSelect = $('<select name ="option[]" class="form-control ih-medium ip-light radius-xs b-light px-15"></select>');
+        $('#optionsList').empty();
+    }
+}
+
+function addOption() {
+    let optionValue = $('#optionValue').val();
+    if (optionValue) {
+        let option = $(`<option value="${optionValue}"></option>`).text(optionValue);
+        currentSelect.append(option);
+
+        let listItem = $('<div></div>').text(optionValue);
+        $('#optionsList').append(listItem);
+
+        $('#optionValue').val('');
+    }
+}
+
+
+let selectData = [];
+
+function finishSelect() {
+    let selectName = $('#selectName').val() || "Select Adı";
+    let content = $('<div class="form-group"></div>');
+    let label = $('<label class="il-gray fs-14 fw-500 align-center"></label>').text(selectName);
+    let deleteButton = $('<button class="btn btn-danger">Sil</button>').click(function() {
+        content.remove();
+    });
+
+    content.append(label).append(currentSelect).append(deleteButton);
+    $('#alanlar').append(content);
+    $('#selectModal').modal('hide');
+    $('.modal-backdrop').remove();
+
+    // Seçili veriyi sakla
+    let options = [];
+    currentSelect.find('option').each(function() {
+        options.push($(this).val());
+    });
+
+    // select verisi dizisine ekleyin
+    selectData.push({
+        name: selectName,
+        options: options
+    });
+
+    // Gizli inputta bu veriyi JSON olarak sakla
+    $('#selectData').val(JSON.stringify(selectData));
+}
+
+
+
+</script>
+{%endblock js%}
