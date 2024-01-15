@@ -1,6 +1,4 @@
-# Proje Adı
-
-Kısa açıklama buraya yazılır.
+QUİZ PLATFORMU
 
 ## Kurulum
 
